@@ -38,8 +38,16 @@ jobs:
         port: 22
         script: |
           cd /var/www/jcski-blog
+          echo "📥 拉取最新代码..."
           git pull origin main
+          echo "📦 安装依赖..."
           npm ci --production
+          echo "🗄️ 更新数据库..."
+          npx prisma generate
+          npx prisma db push
+          echo "🔨 构建应用..."
           npm run build
+          echo "🚀 重启应用..."
           pm2 restart jcski-blog || pm2 start ecosystem.config.js
-          echo "✅ Deployment completed successfully!"
+          pm2 save
+          echo "✅ 部署完成！应用已重启"
