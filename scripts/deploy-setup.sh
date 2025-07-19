@@ -31,7 +31,7 @@ mkdir -p logs
 # 初始化Git仓库（如果不存在）
 if [ ! -d ".git" ]; then
     git init
-    git remote add origin https://github.com/你的用户名/jcski-blog-deploy.git
+    git remote add origin https://github.com/kenkakuma/jcski.git
 fi
 
 # 创建生产环境配置

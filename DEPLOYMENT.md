@@ -26,7 +26,7 @@ ssh -i your-key.pem ubuntu@your-ec2-ip
 #### 2. 运行自动设置脚本
 ```bash
 # 下载并运行设置脚本
-curl -fsSL https://raw.githubusercontent.com/your-username/jcski-blog-deploy/main/scripts/deploy-setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kenkakuma/jcski/main/scripts/deploy-setup.sh | bash
 ```
 
 #### 3. 手动配置环境变量
@@ -185,7 +185,7 @@ pm2 set pm2-logrotate:retain 30
 ## 📞 技术支持
 
 如有问题，请查看：
-- [GitHub Issues](https://github.com/your-username/jcski-blog-deploy/issues)
+- [GitHub Issues](https://github.com/kenkakuma/jcski/issues)
 - [项目文档](./CLAUDE.md)
 - [开发日志](./CLAUDE.md#版本历史)
 
