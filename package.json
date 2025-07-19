@@ -1,0 +1,27 @@
+{
+  "name": "jcski-blog",
+  "private": true,
+  "version": "0.0.1",
+  "description": "JCSKI Personal blog built with Nuxt 3",
+  "scripts": {
+    "dev": "nuxt dev --port 3222",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "nuxt": "^3.12.3"
+  },
+  "dependencies": {
+    "@nuxt/content": "^2.13.1",
+    "@prisma/client": "^6.11.1",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^1.4.12",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "prisma": "^6.11.1"
+  }
+}

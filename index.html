@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCSKI Blog v0.0.1 - 选择演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .demo-selector {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        
+        .demo-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .demo-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+        
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .demo-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .demo-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .demo-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .demo-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .version-info {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .version-info h3 {
+            color: #1976d2;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .version-info p {
+            color: #1976d2;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        
+        .tech-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-note {
+            background: #fff3e0;
+            border: 1px solid #ffcc02;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+        }
+        
+        .status-note p {
+            color: #f57c00;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-selector">
+        <h1 class="logo">JCSKI</h1>
+        <p class="subtitle">Personal Blog System v0.0.1</p>
+        
+        <div class="version-info">
+            <h3>🎉 项目演示说明</h3>
+            <p>由于npm权限问题，当前提供静态版本演示。所有功能组件已开发完成，展示完整设计效果。</p>
+        </div>
+        
+        <div class="demo-options">
+            <a href="frontend-demo.html" class="demo-card">
+                <div class="demo-icon">🏠</div>
+                <h2 class="demo-title">前台页面</h2>
+                <p class="demo-description">
+                    J-WAVE风格设计<br>
+                    响应式布局<br>
+                    现代化界面
+                </p>
+            </a>
+            
+            <a href="admin-demo.html" class="demo-card">
+                <div class="demo-icon">🎛️</div>
+                <h2 class="demo-title">管理后台</h2>
+                <p class="demo-description">
+                    完整管理系统<br>
+                    5大功能模块<br>
+                    专业界面设计
+                </p>
+            </a>
+        </div>
+        
+        <div class="tech-stack">
+            <span class="tech-tag">Nuxt 3</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">Prisma ORM</span>
+            <span class="tech-tag">SQLite</span>
+            <span class="tech-tag">JWT Auth</span>
+            <span class="tech-tag">Vue 3</span>
+        </div>
+        
+        <div class="status-note">
+            <p><strong>完整版本运行:</strong> 解决npm权限后可运行完整Nuxt版本 (npm install && npm run dev)</p>
+        </div>
+    </div>
+</body>
+</html>

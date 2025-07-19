@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  
+  posts     BlogPost[]
+}
+
+model BlogPost {
+  id           Int      @id @default(autoincrement())
+  title        String
+  content      String
+  excerpt      String
+  slug         String   @unique
+  coverImage   String?
+  featuredImage String? // Featured image for homepage display
+  audioFile    String?
+  tags         String   // JSON string of tags array
+  category     String   @default("BLOG") // Category for the post (MUSIC, TECH, SKIING, FISHING, BLOG, NEWS, etc.)
+  published    Boolean  @default(false)
+  isPinned     Boolean  @default(false) // Pinned posts appear in JCSKI NEWS section
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  authorId     Int
+  author       User     @relation(fields: [authorId], references: [id])
+}
+
+model MediaFile {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  originalName String
+  path         String
+  mimetype     String
+  size         Int
+  type         String   // 'image' or 'audio'
+  createdAt    DateTime @default(now())
+}
+
+model SiteSettings {
+  id               Int      @id @default(autoincrement())
+  siteName         String   @default("JCSKI")
+  siteDescription  String   @default("Personal Blog")
+  heroTitle        String   @default("JCSKI")
+  heroSubtitle     String   @default("INSPIRE JCSKI いろいろな発見")
+  heroDescription  String   @default("様々なジャンルを超えた音楽や情報をお届けし、日常生活に新しいインスピレーションをもたらします。")
+  heroImage        String?
+  backgroundMusic  String?
+  socialLinks      String   // JSON string of social links
+  updatedAt        DateTime @updatedAt
+}
+
+model Calendar {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  date        DateTime
+  type        String   @default("event") // 'event', 'birthday', 'reminder'
+  color       String   @default("#007bff")
+  createdAt   DateTime @default(now())
+}
+
+model HeroContent {
+  id          Int      @id @default(autoincrement())
+  type        String   @unique // 'music', 'skiing', 'tech', 'fishing', 'about'
+  title       String
+  subtitle    String
+  description String
+  image       String?
+  active      Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

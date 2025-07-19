@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCSKI - Personal Blog</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #007bff;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            flex: 0 0 400px;
+            background-color: #ffffff;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .sidebar-section {
+            margin-bottom: 0;
+        }
+
+        .sidebar-titles {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 0;
+        }
+
+        .sidebar-title-group {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .section-title:hover {
+            background-color: #000;
+            color: #fff;
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        /* Search */
+        .keyword-search {
+            margin-top: auto;
+        }
+
+        .search-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .search-input-group {
+            display: flex;
+            border: 2px solid #000;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .search-btn {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-btn:hover {
+            background-color: #333;
+        }
+
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            margin-bottom: 100px;
+        }
+
+        .hero-title {
+            font-size: 84px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 80px;
+            color: #000;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .hero-banner {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+        }
+
+        .inspire-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .event-details {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .date-info {
+            font-size: 24px;
+            font-weight: bold;
+            background-color: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+        }
+
+        .info-label {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background-color: rgba(255,255,255,0.9);
+            color: #000;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .decorative-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .icon {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+
+        .hero-info-box {
+            background-color: #000;
+            color: white;
+            padding: 20px 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        /* Pick Up Section */
+        .pickup-section {
+            margin-bottom: 120px;
+        }
+
+        .pickup-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 40px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .carousel-btn {
+            background: none;
+            border: 1px solid #ccc;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background: #f8f9fa;
+            border-color: #999;
+        }
+
+        .carousel-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .dot.active {
+            background: #333;
+        }
+
+        .pickup-main {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .pickup-image {
+            width: 300px;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .pickup-info {
+            flex: 1;
+        }
+
+        .pickup-article-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .pickup-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .pickup-desc {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* News Section */
+        .news-section {
+            margin-bottom: 80px;
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+
+        .news-title {
+            font-size: 28px;
+            font-weight: 900;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .news-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .view-all {
+            font-size: 13px;
+            color: #000;
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            padding: 8px 16px;
+            border: 1px solid #000;
+        }
+
+        .view-all:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 40px;
+            height: 500px;
+        }
+
+        .news-item {
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .news-item.large {
+            grid-row: span 2;
+            grid-column: 1;
+        }
+
+        .news-image {
+            width: 100%;
+            background: #f0f0f0;
+            margin-bottom: 20px;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-item.large .news-image {
+            height: 320px;
+        }
+
+        .news-item:not(.large) .news-image {
+            height: 180px;
+        }
+
+        .news-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #e8e8e8 25%, transparent 25%), 
+                        linear-gradient(-45deg, #e8e8e8 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #e8e8e8 75%), 
+                        linear-gradient(-45deg, transparent 75%, #e8e8e8 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.3;
+        }
+
+        .news-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 15px;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .news-item.large .news-text {
+            font-size: 16px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .news-date {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: auto;
+        }
+
+        /* Press Release Section */
+        .press-section {
+            margin-bottom: 100px;
+        }
+
+        .press-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 40px;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .press-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .press-date {
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .press-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Footer */
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 40px 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-brand {
+            margin-bottom: 30px;
+        }
+
+        .footer-logo {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .social-label {
+            font-size: 12px;
+            margin-right: 15px;
+            color: #999;
+        }
+
+        .social-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            transition: opacity 0.3s ease;
+        }
+
+        .social-link:hover {
+            opacity: 0.7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 60px;
+        }
+
+        .footer-column h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 8px;
+        }
+
+        .footer-column a {
+            font-size: 12px;
+            color: #999;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-column a:hover {
+            color: #fff;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-layout {
+                gap: 60px;
+                padding: 60px 40px;
+                max-width: 1200px;
+            }
+            
+            .sidebar {
+                width: 300px;
+            }
+            
+            .hero-title {
+                font-size: 64px;
+                letter-spacing: 4px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                flex-direction: column;
+                gap: 40px;
+                padding: 40px 30px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+            
+            .sidebar-section {
+                margin-bottom: 40px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+                margin-bottom: 8px;
+            }
+            
+            .hero-title {
+                font-size: 48px;
+                margin-bottom: 40px;
+                letter-spacing: 3px;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr 1fr;
+                height: auto;
+                gap: 30px;
+            }
+            
+            .news-item.large {
+                grid-row: span 1;
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+            
+            .main-layout {
+                padding: 30px 20px;
+                gap: 30px;
+            }
+            
+            .sidebar {
+                display: block;
+            }
+            
+            .section-title {
+                font-size: 20px;
+                padding: 6px 0;
+            }
+            
+            .section-title:hover {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            .hero-title {
+                font-size: 36px;
+                letter-spacing: 2px;
+                margin-bottom: 30px;
+            }
+            
+            .pickup-title {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+            
+            .pickup-main {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .pickup-image {
+                width: 100%;
+                max-width: 300px;
+                height: 180px;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .news-item.large {
+                grid-column: span 1;
+            }
+            
+            .news-title {
+                font-size: 20px;
+            }
+            
+            .news-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+            }
+            
+            .footer-links {
+                margin-top: 30px;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+                letter-spacing: 1px;
+            }
+            
+            .pickup-title, .news-title, .press-title {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+            
+            .section-title {
+                font-size: 18px;
+            }
+        }
+
+        /* Admin Button */
+        .admin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .admin-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">JCSKI</a>
+                <nav class="nav">
+                    <a href="#" class="nav-link">THIS WEEK</a>
+                    <a href="#" class="nav-link">TIME TABLE</a>
+                    <a href="#" class="nav-link">ON AIR SONGS</a>
+                    <a href="#" class="nav-link">LIVE & EVENTS</a>
+                    <a href="#" class="nav-link">NAVIGATORS</a>
+                    <a href="#" class="nav-link">PODCASTS</a>
+                    <a href="#" class="nav-link">GOODS</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-titles">
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">THIS WEEK</h2>
+                    <p class="section-subtitle">今週の番組情報</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">TIME TABLE</h2>
+                    <p class="section-subtitle">番組表</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">ON AIR SONGS</h2>
+                    <p class="section-subtitle">オンエア楽曲</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">LIVE & EVENTS</h2>
+                    <p class="section-subtitle">ライブ・イベント情報</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">NAVIGATORS</h2>
+                    <p class="section-subtitle">ナビゲーター紹介</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">PODCASTS</h2>
+                    <p class="section-subtitle">ポッドキャスト</p>
+                </div>
+                
+                <div class="sidebar-title-group">
+                    <h2 class="section-title">GOODS</h2>
+                    <p class="section-subtitle">J-WAVEグッズ・番組オリジナルグッズ販売中</p>
+                </div>
+            </div>
+
+            <div class="keyword-search">
+                <h3 class="search-label">KEYWORD</h3>
+                <div class="search-input-group">
+                    <input type="text" class="search-input" placeholder="">
+                    <button class="search-btn">🔍</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Banner -->
+            <div class="hero-banner">
+                <div class="decorative-icons">
+                    <div class="icon" style="top: 20px; left: 50px;">🏀</div>
+                    <div class="icon" style="top: 60px; right: 100px;">🎸</div>
+                    <div class="icon" style="bottom: 80px; left: 80px;">🍔</div>
+                    <div class="icon" style="bottom: 120px; right: 150px;">🐕</div>
+                    <div class="icon" style="top: 120px; left: 200px;">🍺</div>
+                </div>
+                
+                <div class="hero-content">
+                    <h1 class="inspire-title">INSPIRE TOKYO 2025</h1>
+                    <p class="event-details">BEST MUSIC & MARKET</p>
+                    <p class="event-details">supported by Expedia</p>
+                    <div class="date-info">2025.7.10(THU) - 13(SUN)<br>11:00-21:00</div>
+                    <p style="margin-top: 10px; font-size: 14px;">YOYOGI PARK I LINE CUBE SHIBUYA<br>HARAJUKU I OMOTESANDO</p>
+                </div>
+                
+                <div class="info-label">INFO</div>
+            </div>
+            
+            <!-- Bottom Info Section -->
+            <div class="hero-info-box">
+                <h2 class="hero-subtitle">INSPIRE TOKYO いよいよ開催</h2>
+                <p class="hero-description">
+                    今年は渋谷・原宿エリアの各所で開催！そして、開催を4日間にスケールアップ！マーケットやフリーライブなど
+                    を行う代々木公園イベント広場を中心に渋谷・原宿中をカルチャー一色にする4日間です。
+                </p>
+            </div>
+
+            <!-- Pick Up Section -->
+            <section class="pickup-section">
+                <h2 class="pickup-title">PICK UP</h2>
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev">‹</button>
+                    <div class="carousel-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <button class="carousel-btn next">›</button>
+                </div>
+                
+                <div class="pickup-content">
+                    <div class="pickup-main">
+                        <div class="pickup-image">[Featured Image]</div>
+                        <div class="pickup-info">
+                            <h3 class="pickup-article-title">JCSKI Blog システム始動</h3>
+                            <p class="pickup-date">7/13(土)開発完了</p>
+                            <p class="pickup-desc">
+                                Nuxt 3とTypeScriptを使用したモダンな個人ブログシステムが完成。J-WAVE風デザインと充実した管理機能を搭載...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- News Section -->
+            <section class="news-section">
+                <div class="news-header">
+                    <h2 class="news-title">JCSKI NEWS</h2>
+                    <p class="news-subtitle">技術、音楽、創作 旬なトピックス</p>
+                    <a href="#" class="view-all">VIEW ALL →</a>
+                </div>
+
+                <div class="news-grid">
+                    <article class="news-item large">
+                        <div class="news-image">[News Image 1]</div>
+                        <div class="news-content">
+                            <p class="news-text">
+                                Nuxt 3を使用したブログシステムが完成。J-WAVE風のデザインで個人ブログを一新...
+                            </p>
+                            <time class="news-date">2025.07.13</time>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-image">[News Image 2]</div>
+                        <div class="news-content">
+                            <p class="news-text">
+                                管理後台システムで記事投稿が簡単に。プリスマORM搭載で高速データ操作を実現...
+                            </p>
+                            <time class="news-date">2025.07.13</time>
+                        </div>
+                    </article>
+
+                    <article class="news-item">
+                        <div class="news-image">[News Image 3]</div>
+                        <div class="news-content">
+                            <p class="news-text">
+                                TypeScript完全対応で開発効率向上。モダンなVue 3 Composition APIを活用...
+                            </p>
+                            <time class="news-date">2025.07.13</time>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- Press Release Section -->
+            <section class="press-section">
+                <h2 class="press-title">PRESS RELEASE</h2>
+                <div class="press-list">
+                    <div class="press-item">
+                        <time class="press-date">2025.7.13</time>
+                        <p class="press-content">
+                            「JCSKI Blog v0.0.1」リリース発表 - 完全自作ブログシステムが遂に完成
+                        </p>
+                    </div>
+                    <div class="press-item">
+                        <time class="press-date">2025.7.13</time>
+                        <p class="press-content">
+                            J-WAVE風デザインを採用した個人ブログサイトの開発完了について
+                        </p>
+                    </div>
+                    <div class="press-item">
+                        <time class="press-date">2025.7.13</time>
+                        <p class="press-content">
+                            Nuxt 3 + TypeScript技術スタックによる次世代ブログシステムの構築成功
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3 class="footer-logo">JCSKI</h3>
+                <div class="social-links">
+                    <span class="social-label">FOLLOW US</span>
+                    <a href="#" class="social-link">📧</a>
+                    <a href="#" class="social-link">📘</a>
+                    <a href="#" class="social-link">✖️</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🎵</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>OUTLINE</h4>
+                    <ul>
+                        <li><a href="#">ABOUT US</a></li>
+                        <li><a href="#">プライバシーポリシー</a></li>
+                        <li><a href="#">利用規約</a></li>
+                        <li><a href="#">特定商取引法</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>CONTENTS</h4>
+                    <ul>
+                        <li><a href="#">PODCASTS</a></li>
+                        <li><a href="#">音楽番組表</a></li>
+                        <li><a href="#">GUEST PASSPORT</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>JCSKI</h4>
+                    <ul>
+                        <li><a href="#">会員新規登録</a></li>
+                        <li><a href="#">会員特典確認</a></li>
+                        <li><a href="#">ログイン</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Access Button -->
+    <a href="admin-demo.html" class="admin-btn">🎛️ 管理后台</a>
+
+    <script>
+        // Simple interactivity
+        document.querySelectorAll('.link-item').forEach(item => {
+            item.addEventListener('click', () => {
+                alert('功能链接 - 在真实环境中将导航到相应页面');
+            });
+        });
+
+        document.querySelectorAll('.carousel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('轮播功能 - 在真实环境中将切换内容');
+            });
+        });
+
+        document.querySelector('.search-btn').addEventListener('click', () => {
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput.value) {
+                alert(`搜索: ${searchInput.value} - 在真实环境中将执行搜索`);
+            }
+        });
+    </script>
+</body>
+</html>
