@@ -264,8 +264,19 @@ const loadPosts = async () => {
     if (process.dev) {
       console.log('加载文章，查询参数:', query.toString())
     }
+
+    // 获取认证token
+    const token = useCookie('auth-token').value
+    if (!token) {
+      await navigateTo('/admin/login')
+      return
+    }
+
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    }
     
-    const { data } = await $fetch(`/api/admin/posts?${query}`)
+    const { data } = await $fetch(`/api/admin/posts?${query}`, { headers })
     
     if (process.dev) {
       console.log('获取的文章数据:', data)
@@ -279,6 +290,9 @@ const loadPosts = async () => {
     }
   } catch (error) {
     console.error('加载文章失败:', error)
+    if (error.statusCode === 401) {
+      await navigateTo('/admin/login')
+    }
   } finally {
     loading.value = false
   }
@@ -354,6 +368,19 @@ const savePost = async (event) => {
     console.log('编辑中的文章:', editingPost.value)
   }
 
+  // 获取认证token
+  const token = useCookie('auth-token').value
+  if (!token) {
+    alert('认证已过期，请重新登录')
+    await navigateTo('/admin/login')
+    return
+  }
+
+  const headers = {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+
   try {
     let response
     if (editingPost.value) {
@@ -362,6 +389,7 @@ const savePost = async (event) => {
       }
       response = await $fetch(`/api/admin/posts/${editingPost.value.id}`, {
         method: 'PUT',
+        headers,
         body: postData
       })
     } else {
@@ -370,6 +398,7 @@ const savePost = async (event) => {
       }
       response = await $fetch('/api/admin/posts/create', {
         method: 'POST',
+        headers,
         body: postData
       })
     }
@@ -381,21 +410,44 @@ const savePost = async (event) => {
     loadPosts()
   } catch (error) {
     console.error('保存失败详细信息:', error)
-    alert(`保存失败: ${error.message || '请重试'}`)
+    if (error.statusCode === 401) {
+      alert('认证已过期，请重新登录')
+      await navigateTo('/admin/login')
+    } else {
+      alert(`保存失败: ${error.message || '请重试'}`)
+    }
   }
 }
 
 const deletePost = async (id) => {
   if (!confirm('确定要删除这篇文章吗？')) return
 
+  // 获取认证token
+  const token = useCookie('auth-token').value
+  if (!token) {
+    alert('认证已过期，请重新登录')
+    await navigateTo('/admin/login')
+    return
+  }
+
+  const headers = {
+    'Authorization': `Bearer ${token}`
+  }
+
   try {
     await $fetch(`/api/admin/posts/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers
     })
     loadPosts()
   } catch (error) {
     console.error('Failed to delete post:', error)
-    alert('删除失败，请重试')
+    if (error.statusCode === 401) {
+      alert('认证已过期，请重新登录')
+      await navigateTo('/admin/login')
+    } else {
+      alert('删除失败，请重试')
+    }
   }
 }
 
