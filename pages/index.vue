@@ -39,7 +39,7 @@
             <div class="hero-left">
               <div class="hero-nav">
                 <h2 class="hero-main-title">JCSKI</h2>
-                <p class="hero-subtitle">PERSONAL BLOG <span style="color: #ff6b6b; font-size: 12px;">[自动部署测试]</span></p>
+                <p class="hero-subtitle">PERSONAL BLOG <span style="color: #4CAF50; font-size: 12px;">[jcski.com 域名部署]</span></p>
                 
                 <nav class="hero-menu">
                   <a href="/music" class="hero-menu-item" :class="{ active: activeHero?.type === 'music' }" @mouseenter="handleMenuHover('music')" @mouseleave="handleMenuLeave">
@@ -359,7 +359,7 @@ onMounted(() => {
 })
 
 useHead({
-  title: 'JCSKI BLOG - AWS自动部署测试 v0.4.1',
+  title: 'JCSKI BLOG - jcski.com 正式部署 v0.4.1',
   meta: [
     { name: 'description', content: 'JCSKI personal blog featuring technology, music, and creative content in J-WAVE style.' }
   ]

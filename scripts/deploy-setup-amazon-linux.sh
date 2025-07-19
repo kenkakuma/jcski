@@ -53,7 +53,7 @@ NODE_ENV=production
 PORT=3222
 DATABASE_URL=file:./prisma/prod.db
 JWT_SECRET=jcski-blog-production-super-secure-jwt-secret-2025
-BASE_URL=http://ec2-54-168-203-21.ap-northeast-1.compute.amazonaws.com
+BASE_URL=http://jcski.com
 ADMIN_EMAIL=admin@jcski.com
 ADMIN_PASSWORD=admin123456
 EOF
@@ -77,7 +77,7 @@ npm run build
 sudo tee /etc/nginx/conf.d/jcski-blog.conf > /dev/null << 'EOF'
 server {
     listen 80;
-    server_name ec2-54-168-203-21.ap-northeast-1.compute.amazonaws.com;
+    server_name jcski.com www.jcski.com;
 
     location / {
         proxy_pass http://localhost:3222;
@@ -118,9 +118,9 @@ echo ""
 echo "✅ Amazon Linux EC2环境设置完成！"
 echo ""
 echo "📋 环境信息:"
-echo "   🖥️  服务器: ec2-54-168-203-21.ap-northeast-1.compute.amazonaws.com"
-echo "   🌐 网站URL: http://ec2-54-168-203-21.ap-northeast-1.compute.amazonaws.com"
-echo "   🔐 管理后台: http://ec2-54-168-203-21.ap-northeast-1.compute.amazonaws.com/admin"
+echo "   🖥️  服务器: jcski.com (54.168.203.21)"
+echo "   🌐 网站URL: http://jcski.com"
+echo "   🔐 管理后台: http://jcski.com/admin"
 echo "   👤 管理员账户: admin@jcski.com / admin123456"
 echo ""
 echo "📝 下一步操作:"

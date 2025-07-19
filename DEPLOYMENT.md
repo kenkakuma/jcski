@@ -25,8 +25,8 @@ ssh -i your-key.pem ubuntu@your-ec2-ip
 
 #### 2. 运行自动设置脚本
 ```bash
-# 下载并运行设置脚本
-curl -fsSL https://raw.githubusercontent.com/kenkakuma/jcski/main/scripts/deploy-setup.sh | bash
+# 下载并运行Amazon Linux专用设置脚本
+curl -fsSL https://raw.githubusercontent.com/kenkakuma/jcski/main/scripts/deploy-setup-amazon-linux.sh | bash
 ```
 
 #### 3. 手动配置环境变量
@@ -39,7 +39,7 @@ NODE_ENV=production
 PORT=3222
 DATABASE_URL=file:./prisma/prod.db
 JWT_SECRET=your-super-secure-jwt-secret
-BASE_URL=http://your-domain.com
+BASE_URL=http://jcski.com
 ADMIN_EMAIL=admin@jcski.com
 ADMIN_PASSWORD=your-secure-password
 ```
@@ -50,7 +50,7 @@ ADMIN_PASSWORD=your-secure-password
 sudo nano /etc/nginx/sites-available/jcski-blog
 
 # 修改server_name为你的域名
-server_name your-domain.com www.your-domain.com;
+server_name jcski.com www.jcski.com;
 ```
 
 #### 5. 重启服务
@@ -69,7 +69,7 @@ sudo systemctl restart nginx
 | `EC2_SSH_KEY` | EC2私钥内容 | `-----BEGIN RSA PRIVATE KEY-----...` |
 | `DATABASE_URL` | 生产数据库URL | `file:./prisma/prod.db` |
 | `JWT_SECRET` | JWT密钥 | `your-super-secure-jwt-secret` |
-| `BASE_URL` | 网站基础URL | `http://your-domain.com` |
+| `BASE_URL` | 网站基础URL | `http://jcski.com` |
 
 ### 📦 部署流程
 
@@ -86,8 +86,8 @@ sudo systemctl restart nginx
    - 重启PM2服务
 
 3. **验证部署**
-   - 访问你的域名
-   - 检查管理后台: `http://your-domain.com/admin`
+   - 访问你的域名: http://jcski.com
+   - 检查管理后台: http://jcski.com/admin
 
 ### 🔍 故障排除
 
@@ -137,7 +137,7 @@ node scripts/create-admin.js
    ```bash
    # 使用Let's Encrypt
    sudo apt install certbot python3-certbot-nginx
-   sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+   sudo certbot --nginx -d jcski.com -d www.jcski.com
    ```
 
 3. **定期更新**
