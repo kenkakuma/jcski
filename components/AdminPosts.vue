@@ -90,7 +90,7 @@
 
         <form @submit.prevent="savePost" class="editor-form">
           <div class="form-group">
-            <label>标题</label>
+            <label>标题 <span class="required">*</span></label>
             <input
               v-model="form.title"
               type="text"
@@ -101,7 +101,7 @@
           </div>
 
           <div class="form-group">
-            <label>URL别名</label>
+            <label>URL别名 <span class="label-hint">（可选，留空自动生成）</span></label>
             <input
               v-model="form.slug"
               type="text"
@@ -111,7 +111,7 @@
           </div>
 
           <div class="form-group">
-            <label>摘要</label>
+            <label>摘要 <span class="label-hint">（可选，留空自动生成）</span></label>
             <textarea
               v-model="form.excerpt"
               class="form-textarea"
@@ -121,12 +121,13 @@
           </div>
 
           <div class="form-group">
-            <label>正文</label>
+            <label>正文 <span class="required">*</span></label>
             <textarea
               v-model="form.content"
               class="form-textarea content-editor"
               placeholder="请输入文章内容（支持Markdown）"
               rows="15"
+              required
             ></textarea>
           </div>
 
@@ -160,29 +161,17 @@
           <div class="form-row">
             <div class="form-group">
               <label>封面图片</label>
-              <input
+              <ImagePicker 
                 v-model="form.coverImage"
-                type="text"
-                class="form-input"
-                placeholder="图片URL"
-              >
-              <div v-if="form.coverImage" class="image-preview">
-                <img :src="form.coverImage" alt="封面图片预览" class="preview-img" />
-                <p class="preview-label">封面图片预览</p>
-              </div>
+                placeholder="选择封面图片"
+              />
             </div>
             <div class="form-group">
               <label>特色图片 <span class="label-hint">（用于首页JCSKI NEWS展示）</span></label>
-              <input
+              <ImagePicker 
                 v-model="form.featuredImage"
-                type="text"
-                class="form-input"
-                placeholder="特色图片URL"
-              >
-              <div v-if="form.featuredImage" class="image-preview">
-                <img :src="form.featuredImage" alt="特色图片预览" class="preview-img" />
-                <p class="preview-label">特色图片预览</p>
-              </div>
+                placeholder="选择特色图片"
+              />
             </div>
           </div>
 
@@ -230,6 +219,7 @@
 </template>
 
 <script setup>
+import ImagePicker from './ImagePicker.vue'
 const posts = ref([])
 const loading = ref(false)
 const showEditor = ref(false)
@@ -357,8 +347,31 @@ const savePost = async (event) => {
   const isPublish = event.submitter.name === 'publish'
   const isDraft = event.submitter.name === 'draft'
   
+  // 验证必填字段
+  if (!form.title.trim()) {
+    alert('请输入文章标题')
+    return
+  }
+  
+  if (!form.content.trim()) {
+    alert('请输入文章内容')
+    return
+  }
+  
+  // 如果没有提供摘要，自动生成
+  const excerpt = form.excerpt.trim() || form.content.substring(0, 150) + '...'
+  
+  // 如果没有提供slug，自动生成
+  const slug = form.slug.trim() || form.title.toLowerCase()
+    .replace(/[^\w\s-]/g, '') // 移除特殊字符
+    .replace(/[\s_-]+/g, '-') // 替换空格和下划线为连字符
+    .replace(/^-+|-+$/g, '') // 移除开头和结尾的连字符
+    + '-' + Date.now() // 添加时间戳确保唯一性
+  
   const postData = {
     ...form,
+    excerpt,
+    slug,
     published: isPublish ? true : isDraft ? false : form.published,
     tags: JSON.stringify(tagsInput.value.split(',').map(tag => tag.trim()).filter(Boolean))
   }
@@ -786,28 +799,11 @@ onMounted(() => {
   color: #666;
 }
 
-.image-preview {
-  margin-top: 12px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
-  text-align: center;
+.required {
+  color: #dc3545;
+  font-weight: 600;
 }
 
-.preview-img {
-  max-width: 200px;
-  max-height: 120px;
-  width: auto;
-  height: auto;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.preview-label {
-  margin: 8px 0 0 0;
-  font-size: 12px;
-  color: #666;
-}
 
 .form-input, .form-textarea, .form-select {
   width: 100%;

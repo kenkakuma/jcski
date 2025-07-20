@@ -14,6 +14,26 @@
         <button @click="$refs.fileInput.click()" class="btn-primary">
           📁 上传文件
         </button>
+        <button v-if="selectionMode" @click="cancelSelection" class="btn-secondary">
+          取消选择
+        </button>
+      </div>
+    </div>
+
+    <!-- Drag and Drop Zone -->
+    <div 
+      v-if="!uploading"
+      class="drop-zone"
+      :class="{ 'drag-over': dragOver }"
+      @drop="handleDrop"
+      @dragover.prevent="dragOver = true"
+      @dragleave="dragOver = false"
+      @dragenter.prevent
+    >
+      <div class="drop-content">
+        <div class="drop-icon">📁</div>
+        <p>拖拽文件到这里上传</p>
+        <p class="drop-hint">或点击上方按钮选择文件</p>
       </div>
     </div>
 
@@ -40,16 +60,31 @@
       </div>
 
       <div v-else class="grid">
-        <div v-for="file in mediaFiles" :key="file.id" class="media-item">
+        <div 
+          v-for="file in mediaFiles" 
+          :key="file.id" 
+          class="media-item"
+          :class="{ 
+            'selected': selectedFiles.some(f => f.id === file.id),
+            'selection-mode': selectionMode 
+          }"
+        >
           <div class="media-preview">
+            <div v-if="selectionMode" class="selection-checkbox">
+              <input 
+                type="checkbox" 
+                :checked="selectedFiles.some(f => f.id === file.id)"
+                @change="toggleFileSelection(file)"
+              >
+            </div>
             <img
               v-if="file.type === 'image'"
               :src="file.path"
               :alt="file.originalName"
               class="preview-image"
-              @click="selectMedia(file)"
+              @click="toggleFileSelection(file)"
             >
-            <div v-else class="audio-preview" @click="selectMedia(file)">
+            <div v-else class="audio-preview" @click="toggleFileSelection(file)">
               <div class="audio-icon">🎵</div>
               <audio controls class="audio-controls">
                 <source :src="file.path" type="audio/mpeg">
@@ -117,15 +152,45 @@ const uploading = ref(false)
 const uploadProgress = ref(0)
 const filter = ref('all')
 const selectedMedia = ref(null)
+const dragOver = ref(false)
+const selectionMode = ref(false)
+const selectedFiles = ref([])
+
+// 接收来自父组件的选择模式
+const props = defineProps({
+  selectMode: {
+    type: Boolean,
+    default: false
+  },
+  allowMultiple: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['select', 'cancel'])
 
 const loadMedia = async () => {
   loading.value = true
   try {
+    const token = useCookie('auth-token').value
+    if (!token) {
+      await navigateTo('/admin/login')
+      return
+    }
+
     const query = filter.value !== 'all' ? `?type=${filter.value}` : ''
-    const { data } = await $fetch(`/api/admin/media${query}`)
-    mediaFiles.value = data
+    const response = await $fetch(`/api/admin/media${query}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    mediaFiles.value = response.data.files
   } catch (error) {
     console.error('Failed to load media:', error)
+    if (error.statusCode === 401) {
+      await navigateTo('/admin/login')
+    }
   } finally {
     loading.value = false
   }
@@ -135,29 +200,60 @@ const handleFileUpload = async (event) => {
   const files = Array.from(event.target.files)
   if (files.length === 0) return
 
-  uploading.value = true
-  uploadProgress.value = 0
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      await $fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData
-      })
-      uploadProgress.value = Math.round(((i + 1) / files.length) * 100)
-    } catch (error) {
-      console.error('Failed to upload file:', error)
+  // Validate file types and sizes
+  for (const file of files) {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('audio/')) {
+      alert('只支持图片和音频文件')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`文件 ${file.name} 超过10MB限制`)
+      return
     }
   }
 
-  uploading.value = false
+  uploading.value = true
   uploadProgress.value = 0
-  event.target.value = '' // Reset input
-  loadMedia() // Refresh list
+
+  const token = useCookie('auth-token').value
+  if (!token) {
+    alert('认证已过期，请重新登录')
+    await navigateTo('/admin/login')
+    return
+  }
+
+  try {
+    const formData = new FormData()
+    files.forEach(file => formData.append('file', file))
+
+    const response = await $fetch('/api/admin/media/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData,
+      onUploadProgress: (progress) => {
+        uploadProgress.value = Math.round((progress.loaded / progress.total) * 100)
+      }
+    })
+
+    uploadProgress.value = 100
+    alert(response.data.message)
+    
+  } catch (error) {
+    console.error('Failed to upload files:', error)
+    if (error.statusCode === 401) {
+      alert('认证已过期，请重新登录')
+      await navigateTo('/admin/login')
+    } else {
+      alert('上传失败: ' + (error.data?.message || '请重试'))
+    }
+  } finally {
+    uploading.value = false
+    uploadProgress.value = 0
+    event.target.value = '' // Reset input
+    loadMedia() // Refresh list
+  }
 }
 
 const selectMedia = (file) => {
@@ -184,14 +280,30 @@ const copyUrl = async (url) => {
 const deleteMedia = async (id) => {
   if (!confirm('确定要删除这个文件吗？')) return
 
+  const token = useCookie('auth-token').value
+  if (!token) {
+    alert('认证已过期，请重新登录')
+    await navigateTo('/admin/login')
+    return
+  }
+
   try {
     await $fetch(`/api/admin/media/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })
+    alert('文件删除成功')
     loadMedia()
   } catch (error) {
     console.error('Failed to delete media:', error)
-    alert('删除失败，请重试')
+    if (error.statusCode === 401) {
+      alert('认证已过期，请重新登录')
+      await navigateTo('/admin/login')
+    } else {
+      alert('删除失败: ' + (error.data?.message || '请重试'))
+    }
   }
 }
 
@@ -207,7 +319,113 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('zh-CN')
 }
 
+// 拖拽上传功能
+const handleDrop = (event) => {
+  event.preventDefault()
+  dragOver.value = false
+  
+  const files = Array.from(event.dataTransfer.files)
+  if (files.length > 0) {
+    handleFileUploadFromFiles(files)
+  }
+}
+
+const handleFileUploadFromFiles = async (files) => {
+  // 验证文件类型和大小
+  for (const file of files) {
+    if (!file.type.startsWith('image/') && !file.type.startsWith('audio/')) {
+      alert('只支持图片和音频文件')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`文件 ${file.name} 超过10MB限制`)
+      return
+    }
+  }
+
+  uploading.value = true
+  uploadProgress.value = 0
+
+  const token = useCookie('auth-token').value
+  if (!token) {
+    alert('认证已过期，请重新登录')
+    await navigateTo('/admin/login')
+    return
+  }
+
+  try {
+    const formData = new FormData()
+    files.forEach(file => formData.append('file', file))
+
+    const response = await $fetch('/api/admin/media/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    })
+
+    alert(response.data.message)
+    
+  } catch (error) {
+    console.error('Failed to upload files:', error)
+    if (error.statusCode === 401) {
+      alert('认证已过期，请重新登录')
+      await navigateTo('/admin/login')
+    } else {
+      alert('上传失败: ' + (error.data?.message || '请重试'))
+    }
+  } finally {
+    uploading.value = false
+    uploadProgress.value = 0
+    loadMedia() // Refresh list
+  }
+}
+
+// 选择模式功能
+const toggleFileSelection = (file) => {
+  if (!props.selectMode) {
+    selectMedia(file)
+    return
+  }
+
+  if (props.allowMultiple) {
+    const index = selectedFiles.value.findIndex(f => f.id === file.id)
+    if (index > -1) {
+      selectedFiles.value.splice(index, 1)
+    } else {
+      selectedFiles.value.push(file)
+    }
+  } else {
+    selectedFiles.value = [file]
+    emit('select', file)
+  }
+}
+
+const cancelSelection = () => {
+  selectedFiles.value = []
+  selectionMode.value = false
+  emit('cancel')
+}
+
+const confirmSelection = () => {
+  if (props.allowMultiple) {
+    emit('select', selectedFiles.value)
+  } else {
+    emit('select', selectedFiles.value[0])
+  }
+}
+
+// 监听选择模式变化
+watch(() => props.selectMode, (newVal) => {
+  selectionMode.value = newVal
+  if (!newVal) {
+    selectedFiles.value = []
+  }
+})
+
 onMounted(() => {
+  selectionMode.value = props.selectMode
   loadMedia()
 })
 </script>
@@ -242,6 +460,57 @@ onMounted(() => {
 
 .btn-primary:hover {
   background: #0056b3;
+}
+
+.btn-secondary {
+  padding: 10px 16px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background: #545b62;
+}
+
+/* Drag and Drop Zone */
+.drop-zone {
+  margin: 20px 0;
+  padding: 40px 20px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  text-align: center;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.drop-zone.drag-over {
+  border-color: #007bff;
+  background: #e3f2fd;
+}
+
+.drop-content {
+  color: #666;
+}
+
+.drop-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.drop-zone p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.drop-hint {
+  font-size: 14px !important;
+  color: #999 !important;
 }
 
 .media-filters {
@@ -306,6 +575,32 @@ onMounted(() => {
 .media-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.media-item.selected {
+  border-color: #007bff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.media-item.selection-mode {
+  cursor: pointer;
+}
+
+.selection-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: white;
+  border-radius: 4px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selection-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 .media-preview {

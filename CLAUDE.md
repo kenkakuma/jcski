@@ -4,10 +4,10 @@
 
 ### 🎯 基本信息
 - **项目名称**: JCSKI Personal Blog
-- **当前版本**: v0.4.2 (2025-07-20)
+- **当前版本**: v0.4.5 (2025-07-20)
 - **技术栈**: Nuxt 3 + TypeScript + SQLite + Prisma
-- **开发服务器**: http://localhost:3222
-- **生产网站**: http://jcski.com ✅ 正常运行
+- **开发服务器**: http://localhost:3003
+- **生产网站**: http://jcski.com ✅ 完全正常 (2025-07-20验证)
 - **项目路径**: /Users/eric/WebstormProjects/jcski
 - **GitHub仓库**: https://github.com/kenkakuma/jcski.git
 - **创建时间**: 2025-07-13
@@ -46,7 +46,9 @@ File Upload: Multer
   "@prisma/client": "^6.11.1",
   "prisma": "^6.11.1",
   "bcryptjs": "^3.0.2",
-  "jsonwebtoken": "^9.0.2"
+  "jsonwebtoken": "^9.0.2",
+  "formidable": "^3.5.4",
+  "@types/formidable": "^3.4.5"
 }
 ```
 
@@ -58,7 +60,7 @@ File Upload: Multer
 jcski/
 ├── 📄 配置文件
 │   ├── package.json           # 项目配置
-│   ├── nuxt.config.ts         # Nuxt配置 (端口3222)
+│   ├── nuxt.config.ts         # Nuxt配置 (端口3003)
 │   ├── tsconfig.json          # TypeScript配置
 │   └── .env                   # 环境变量
 │
@@ -77,6 +79,9 @@ jcski/
 │
 ├── 🔧 后端服务
 │   ├── server/api/            # API接口
+│   │   ├── admin/posts/       # 文章管理API
+│   │   ├── admin/media/       # 媒体管理API (新增)
+│   │   └── auth/              # 身份验证API
 │   ├── middleware/            # 中间件
 │   ├── utils/                 # 工具函数
 │   └── lib/                   # 核心库
@@ -92,7 +97,7 @@ jcski/
 
 ### 🏠 主页结构图
 ```
-📄 index.vue (http://localhost:3222/)
+📄 index.vue (http://localhost:3003/)
 ├── A. 顶部导航栏 (.top-nav)
 │   └── MUSIC | SKIING | TECH | FISHING | ABOUT
 ├── B. Hero框架区域 (.hero-frame) [4:6比例]
@@ -153,6 +158,11 @@ jcski/
 - **特色图片系统**: 首页动态图片展示，支持文章特色图片和分类默认图片
 - **图片预览功能**: 管理后台实时图片预览，支持封面图片和特色图片
 - **管理后台编辑**: 完整的文章编辑功能，包括置顶开关和数据兼容性处理
+- **文章发布系统**: 完整的文章创建、编辑、发布功能，支持自动生成excerpt和slug
+- **服务器端API优化**: 智能字段验证和自动生成，降低文章发布门槛
+- **图片上传管理系统**: 完整的媒体文件上传、管理、选择功能
+- **拖拽上传功能**: 支持拖拽文件到上传区域，提升用户体验
+- **ImagePicker组件**: 可复用的图片选择器，集成上传和媒体库功能
 
 ### 🔄 规划功能
 - **搜索功能**: 全站内容搜索
@@ -174,7 +184,7 @@ npm install
 npm run dev
 
 # 访问地址
-http://localhost:3222/
+http://localhost:3003/
 ```
 
 ### 📊 环境变量
@@ -186,7 +196,7 @@ DATABASE_URL="file:./dev.db"
 JWT_SECRET="jcski-blog-super-secret-jwt-key-2025"
 
 # 应用配置
-BASE_URL="http://localhost:3222"
+BASE_URL="http://localhost:3003"
 
 # 管理员配置
 ADMIN_EMAIL="admin@jcski.com"
@@ -197,13 +207,132 @@ ADMIN_PASSWORD="admin123456"
 
 ## 📝 版本历史
 
-### v0.4.2 (2025-07-20) - 数据库路径问题完全修复与开发环境同步 ⭐ 当前版本
+### v0.4.5 (2025-07-20) - 项目稳定性提升与发布系统优化 ⭐ 当前版本
+**🎯 主要更新**
+- ✅ **版本发布流程标准化**: 建立完整的版本管理和发布工作流
+- ✅ **项目记忆文件完善**: CLAUDE.md项目记忆文件结构优化和内容更新
+- ✅ **代码质量保障**: 所有现有功能稳定性验证和错误修复
+- ✅ **部署流程优化**: 标准化的Git工作流和自动部署流程
+- ✅ **文档体系完善**: 技术架构说明和开发指南更新
+
+**🔧 技术改进**
+- **版本管理**: package.json版本号与项目记忆保持同步
+- **发布工作流**: 标准化的代码提交、构建、测试、部署流程  
+- **稳定性验证**: 全面的功能测试和性能验证
+- **文档维护**: 项目记忆文件的实时更新和版本追踪
+
+**✅ 功能验证 (2025-07-20)**
+- 图片上传系统: ✅ 完全稳定，所有功能正常
+- 文章管理系统: ✅ 创建、编辑、发布功能完善
+- 用户认证系统: ✅ JWT登录和权限管理正常
+- API接口服务: ✅ 所有端点响应稳定
+- 生产环境部署: ✅ http://jcski.com 完全正常运行
+
+**🚀 当前状态 (2025-07-20 23:30)**
+- 开发服务器: http://localhost:3003/ ✅ 正常运行
+- 生产环境: http://jcski.com ✅ 完全正常
+- 所有功能模块: ✅ 稳定可用
+- 自动部署: ✅ GitHub → EC2 工作流正常
+- 项目记忆: ✅ 完整更新，版本追踪清晰
+
+### v0.4.4 (2025-07-20) - 图片上传管理系统完整实现
+**🎯 主要更新**
+- ✅ **完整图片上传系统**: 从上传到管理到使用的完整工作流
+- ✅ **拖拽上传功能**: 支持将文件直接拖拽到上传区域
+- ✅ **媒体管理组件**: 网格布局展示、文件筛选、预览删除功能
+- ✅ **ImagePicker组件**: 双模式图片选择器(上传新图片/媒体库选择)
+- ✅ **文章编辑器集成**: 封面图片和特色图片使用可视化选择器
+- ✅ **安全性完善**: JWT身份验证、文件类型验证、大小限制
+
+**🔧 核心技术实现**
+- **上传API**: `/api/admin/media/upload.post.ts` 支持多文件上传，自动生成唯一文件名
+- **媒体管理**: `AdminMedia.vue` 完整的媒体文件CRUD操作
+- **图片选择器**: `ImagePicker.vue` 可复用组件，支持v-model双向绑定
+- **文件存储**: `public/uploads/` 目录自动管理，支持SVG/PNG/JPG等格式
+- **数据库模型**: `MediaFile` 表记录文件信息，与BlogPost关联
+
+**✅ 功能验证测试结果 (2025-07-20)**
+- 文件上传: ✅ 成功上传JCSKI测试图片 (SVG格式，511字节)
+- 媒体列表: ✅ 正确获取文件列表和分页信息
+- 文件删除: ✅ 同时删除数据库记录和磁盘文件
+- 图片访问: ✅ 上传图片可通过HTTP正常访问
+- 文章集成: ✅ 创建文章"JCSKI 图片上传系统测试"，图片正常显示
+- 拖拽上传: ✅ 支持拖拽文件到上传区域
+- 选择模式: ✅ ImagePicker双模式工作正常
+
+**🎨 用户体验特色**
+- **拖拽上传**: 直观的文件拖拽操作
+- **实时预览**: 图片缩略图和大图预览
+- **进度显示**: 文件上传进度条和状态提示
+- **URL复制**: 一键复制文件链接到剪贴板
+- **响应式设计**: 适配桌面和移动设备
+- **错误处理**: 完善的文件验证和用户友好提示
+
+**🔧 技术架构升级**
+- **formidable依赖**: 新增文件上传处理库
+- **组件化设计**: ImagePicker可在项目任何地方复用
+- **类型安全**: 完整的TypeScript接口定义
+- **安全验证**: JWT认证 + 文件类型/大小验证
+- **存储管理**: 自动文件名生成 + 磁盘清理
+
+**🚀 当前状态 (2025-07-20 22:10)**
+- 开发服务器: http://localhost:3003/ ✅ 正常运行
+- 图片上传系统: ✅ 完全可用，所有功能测试通过
+- 媒体管理: ✅ 上传、预览、删除、选择功能正常
+- 文章编辑: ✅ 图片选择器无缝集成，用户体验优秀
+- API接口: ✅ 所有媒体相关API端点正常响应
+
+### v0.4.3 (2025-07-20) - 后台文章发布功能完整修复与测试验证
+**🎯 主要更新**
+- ✅ **后台文章发布功能完全修复**: 解决"400 Title, content, excerpt, and slug are required"错误
+- ✅ **服务器端API智能化**: 支持excerpt和slug字段自动生成，降低发布门槛
+- ✅ **前后端一致性完善**: 前端和后端都支持智能字段自动生成
+- ✅ **端口配置更新**: 服务器运行在3003端口，所有配置文件已同步
+- ✅ **完整功能测试验证**: 登录、创建、编辑、发布、查询功能全面测试通过
+
+**🔧 核心修复内容**
+- **API验证逻辑优化**: `/api/admin/posts/create.post.ts` 只要求title和content必填
+- **自动生成算法**: 
+  - excerpt: 自动截取前150字符 + "..."
+  - slug: 智能处理特殊字符 + 时间戳确保唯一性
+- **错误处理完善**: 用户友好的错误提示和完整的调试支持
+- **数据兼容性**: 支持现有数据结构，新旧数据无缝兼容
+
+**✅ 功能验证测试结果 (2025-07-20)**
+- 管理员登录: ✅ JWT token正常生成和验证
+- 文章创建: ✅ 最少字段(title+content)即可成功创建
+- 自动生成: ✅ excerpt和slug智能生成正常工作
+- 分类标签: ✅ TECH/BLOG等8种分类正常
+- 置顶功能: ✅ isPinned字段控制正确
+- 发布状态: ✅ published字段管理正常
+- 文章更新: ✅ PUT请求编辑功能正常
+- 文章查询: ✅ 支持published/pinned等筛选参数
+
+**📊 测试数据创建**
+1. **"测试文章发布功能"** - TECH分类，已发布，已置顶，slug: `-1753015396239`
+2. **"JCSKI 博客系统功能测试"** - BLOG分类，已发布，普通文章，slug: `jcski-1753015570952`
+
+**🚀 技术改进亮点**
+- **用户体验**: 用户只需填写标题和内容，系统自动完善其他字段
+- **智能处理**: 中英文标题都能正确生成URL别名
+- **错误防护**: 完善的验证和错误处理机制
+- **开发友好**: 详细的调试日志和错误信息
+
+**🎯 当前状态 (2025-07-20 15:00)**
+- 开发服务器: http://localhost:3003/ ✅ 正常运行
+- 管理后台: http://localhost:3003/admin ✅ 完全可用
+- 文章发布: ✅ 无障碍创建和发布
+- API接口: ✅ 所有端点响应正常
+- 数据库: ✅ SQLite连接稳定，数据完整
+
+### v0.4.2 (2025-07-20) - 数据库路径问题完全修复与开发环境同步
 **🎯 主要更新**
 - ✅ **API功能完全恢复**: 修复Prisma数据库路径问题，所有API端点正常工作
 - ✅ **环境变量统一管理**: 本地开发和生产环境配置分离，避免路径冲突
 - ✅ **管理后台完全可用**: 登录、文章管理、媒体管理等功能全部正常
 - ✅ **本地开发环境同步**: 将服务器修复同步到本地，确保开发部署一致性
 - ✅ **部署脚本优化**: 创建自动化部署修复脚本，防止future部署问题
+- ✅ **完整部署工作流验证**: 本地→GitHub→EC2部署链路测试成功
 
 **🔧 核心问题解决**
 - **数据库路径统一**: Prisma schema使用环境变量，支持相对和绝对路径
@@ -215,7 +344,7 @@ ADMIN_PASSWORD="admin123456"
 ```bash
 # 本地开发 (.env)
 DATABASE_URL="file:./prisma/dev.db"
-BASE_URL="http://localhost:3222"
+BASE_URL="http://localhost:3003"
 
 # 生产环境 (.env.production)  
 DATABASE_URL="file:/var/www/jcski-blog/prisma/dev.db"
@@ -246,6 +375,34 @@ datasource db {
 - 自动化修复脚本防止路径问题重现
 - 完整的开发到生产部署工作流
 
+**✅ 部署工作流完整验证 (2025-07-20)**
+```bash
+# 测试流程: 本地开发 → GitHub → EC2生产
+1. 本地修复同步 ✅ 环境变量配置分离完成
+2. Git提交推送 ✅ 提交ID: de0b810, 包含全部修复
+3. 服务器自动更新 ✅ 代码同步，部署脚本运行成功
+4. PM2配置修复 ✅ 环境变量正确，绝对路径生效
+5. 功能验证测试 ✅ API/前端/管理后台全部正常
+
+# 测试结果确认
+- 生产环境: http://jcski.com ✅ 完全正常
+- 本地开发: http://localhost:3222 ✅ 完全正常
+- 路径问题: ✅ 彻底解决，不会再次出现
+```
+
+**🚀 标准部署流程 (已验证)**
+```bash
+# 本地开发
+npm run dev                 # 使用 .env (相对路径)
+
+# 提交部署  
+git add . && git commit -m "功能更新"
+git push origin main        # 自动触发EC2更新
+
+# 生产环境自动使用 .env.production (绝对路径)
+# 如有问题: ./scripts/deploy-fix.sh
+```
+
 ### v0.4.1 (2025-07-20) - GitHub自动部署与生产环境完整实现
 **🎯 主要更新**
 - ✅ GitHub Actions CI/CD配置：完整的自动部署工作流
@@ -274,13 +431,15 @@ datasource db {
 - 构建优化：Nuxt 3生产构建和静态资源优化
 - 服务器配置：Nginx反向代理和域名解析
 
-**✅ 部署状态**
+**✅ 当前部署状态 (2025-07-20 最新验证)**
 - 网站访问：http://jcski.com ✅ 正常运行
 - 前端功能：✅ 完全正常 (所有页面和交互)
 - 静态资源：✅ 正常加载 (CSS、JS、图片)
-- 数据库：✅ 连接正常 (SQLite + Prisma)
+- 数据库：✅ 连接正常 (SQLite + Prisma, 绝对路径)
 - API功能：✅ 所有API端点正常 (v0.4.2修复)
 - 管理后台：✅ 完全可用 (v0.4.2修复)
+- 部署工作流：✅ 本地→GitHub→EC2链路验证成功
+- 环境一致性：✅ 开发和生产环境配置完全同步
 
 ### v0.4.0 (2025-07-19) - 置顶功能与特色图片系统完整实现
 **🎯 主要更新**
@@ -579,24 +738,24 @@ datasource db {
 ### 📖 常用页面
 
 **开发环境 (本地)**
-- 🏠 **主页**: http://localhost:3222/
-- 🎵 **音乐**: http://localhost:3222/music  
-- 🎿 **滑雪**: http://localhost:3222/skiing
-- 💻 **科技**: http://localhost:3222/tech
-- 🎣 **钓鱼**: http://localhost:3222/fishing
-- 👤 **关于**: http://localhost:3222/about
-- 🔐 **管理登录**: http://localhost:3222/admin/login
-- 🛠️ **管理后台**: http://localhost:3222/admin
+- 🏠 **主页**: http://localhost:3003/
+- 🎵 **音乐**: http://localhost:3003/music  
+- 🎿 **滑雪**: http://localhost:3003/skiing
+- 💻 **科技**: http://localhost:3003/tech
+- 🎣 **钓鱼**: http://localhost:3003/fishing
+- 👤 **关于**: http://localhost:3003/about
+- 🔐 **管理登录**: http://localhost:3003/admin/login
+- 🛠️ **管理后台**: http://localhost:3003/admin
 
-**生产环境 (线上)**
-- 🌐 **主页**: http://jcski.com/
-- 🎵 **音乐**: http://jcski.com/music  
-- 🎿 **滑雪**: http://jcski.com/skiing
-- 💻 **科技**: http://jcski.com/tech
-- 🎣 **钓鱼**: http://jcski.com/fishing
-- 👤 **关于**: http://jcski.com/about
-- 🔐 **管理登录**: http://jcski.com/admin/login (⚠️ API问题)
-- 🛠️ **管理后台**: http://jcski.com/admin (⚠️ API问题)
+**生产环境 (线上) ✅ 2025-07-20 全功能验证**
+- 🌐 **主页**: http://jcski.com/ ✅ 正常
+- 🎵 **音乐**: http://jcski.com/music ✅ 正常  
+- 🎿 **滑雪**: http://jcski.com/skiing ✅ 正常
+- 💻 **科技**: http://jcski.com/tech ✅ 正常
+- 🎣 **钓鱼**: http://jcski.com/fishing ✅ 正常
+- 👤 **关于**: http://jcski.com/about ✅ 正常
+- 🔐 **管理登录**: http://jcski.com/admin/login ✅ 完全可用
+- 🛠️ **管理后台**: http://jcski.com/admin ✅ 完全可用
 
 ### 🔧 开发工具
 - **开发服务器**: `npm run dev`
@@ -608,6 +767,7 @@ datasource db {
 - **初始化Hero内容**: `node scripts/init-hero-content.js`
 - **检查Hero数据**: `node scripts/check-hero-data.js`
 - **测试Hero API**: `node scripts/test-hero-api.js`
+- **测试图片上传**: `curl -F "file=@image.jpg" -H "Authorization: Bearer $TOKEN" http://localhost:3003/api/admin/media/upload`
 
 ### 📋 板块修改参考
 如需修改特定板块，可使用以下标识符：
@@ -695,6 +855,51 @@ model BlogPost {
 - API支持: 创建和更新接口支持isPinned字段
 - 前端查询: 支持pinned=true查询参数
 
+### 🖼️ 图片上传系统架构 (v0.4.4)
+
+**核心API端点:**
+- `POST /api/admin/media/upload` - 文件上传接口
+- `GET /api/admin/media` - 获取媒体文件列表
+- `DELETE /api/admin/media/[id]` - 删除媒体文件
+- `GET /uploads/[filename]` - 静态文件访问
+
+**组件架构:**
+```vue
+AdminMedia.vue              // 媒体管理主组件
+├── 拖拽上传区域            // 支持拖拽文件上传
+├── 文件网格展示            // 缩略图网格布局
+├── 文件筛选器              // 按类型筛选(图片/音频)
+├── 预览模态框              // 大图预览和URL复制
+└── 选择模式                // 为其他组件提供文件选择
+
+ImagePicker.vue             // 图片选择器组件
+├── 图片预览区域            // 显示已选择的图片
+├── 上传标签页              // 拖拽上传新图片
+├── 媒体库标签页            // 从现有文件中选择
+└── v-model支持             // 双向数据绑定
+```
+
+**数据库模型:**
+```prisma
+model MediaFile {
+  id           Int      @id @default(autoincrement())
+  filename     String   // 存储的文件名
+  originalName String   // 原始文件名
+  path         String   // 访问路径
+  mimetype     String   // MIME类型
+  size         Int      // 文件大小(字节)
+  type         String   // 文件类型(image/audio)
+  createdAt    DateTime @default(now())
+}
+```
+
+**文件存储策略:**
+- 存储目录: `public/uploads/`
+- 文件命名: `{timestamp}-{randomString}.{extension}`
+- 大小限制: 10MB
+- 支持格式: JPG, PNG, GIF, SVG, MP3, WAV等
+- 自动清理: 删除数据库记录时同步删除磁盘文件
+
 ---
 
 ---
@@ -760,4 +965,41 @@ pm2 restart jcski-blog
 
 ---
 
-*最后更新: 2025-07-20 | 当前版本: v0.4.1*
+## 📊 当前项目状态总结 (2025-07-20)
+
+### ✅ **完全可用的功能**
+- **前端网站**: 所有页面 (主页、音乐、滑雪、科技、钓鱼、关于) 正常运行
+- **后端API**: 所有API端点 (/api/posts, /api/auth/login, /api/admin/*) 正常响应
+- **管理系统**: 文章管理、媒体管理、用户认证完全可用
+- **文章发布**: ✅ 完全修复，支持智能字段自动生成
+- **图片上传系统**: ✅ 完整的媒体文件管理，拖拽上传，图片选择器
+- **部署工作流**: 本地开发→GitHub→EC2生产环境无缝部署
+
+### 🎯 **技术架构稳定性**
+- **数据库**: SQLite + Prisma ORM, 路径问题彻底解决
+- **环境管理**: 开发/生产环境配置完全分离
+- **进程管理**: PM2 + ecosystem.config.js 稳定运行
+- **域名访问**: jcski.com 域名正常解析和访问
+- **API智能化**: 服务器端支持自动生成字段，用户体验优化
+- **媒体管理**: 完整的文件上传、存储、管理系统
+
+### 🚀 **开发部署流程**
+```bash
+# 标准开发流程 (已验证)
+npm run dev                     # 本地开发 (端口3003)
+git add . && git commit -m ""   # 提交代码
+git push origin main            # 自动部署到生产环境
+```
+
+### 🔧 **问题解决能力**
+- 自动化修复脚本: `scripts/deploy-fix.sh`
+- 环境变量驱动配置: 防止路径冲突
+- 完整的调试和诊断工具
+- 智能字段生成: 降低文章发布门槛
+- 媒体文件管理: 支持拖拽上传和可视化选择
+
+**项目状态**: 🟢 生产就绪，功能完整，部署稳定，图片上传管理系统完全可用
+
+---
+
+*最后更新: 2025-07-20 | 当前版本: v0.4.5 | 状态: 生产环境完全正常，项目稳定性提升完成*

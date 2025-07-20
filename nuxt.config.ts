@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
   devServer: {
-    port: 3222
+    port: 3003
   },
   app: {
     head: {
@@ -29,7 +29,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     jwtSecret: process.env.JWT_SECRET || 'jcski-blog-super-secret-jwt-key-2025',
     public: {
-      baseUrl: process.env.BASE_URL || 'http://localhost:3222'
+      baseUrl: process.env.BASE_URL || 'http://localhost:3003'
     }
   }
 })

@@ -28,17 +28,27 @@ export default defineEventHandler(async (event) => {
 
   const { title, content, excerpt, slug, coverImage, featuredImage, audioFile, tags, category, published, isPinned } = await readBody(event)
 
-  if (!title || !content || !excerpt || !slug) {
+  if (!title || !content) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Title, content, excerpt, and slug are required'
+      statusMessage: 'Title and content are required'
     })
   }
+
+  // Auto-generate excerpt if not provided
+  const finalExcerpt = excerpt || content.substring(0, 150) + '...'
+  
+  // Auto-generate slug if not provided
+  const finalSlug = slug || (title.toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, '') // Remove leading and trailing hyphens
+    || 'post') + '-' + Date.now() // Add timestamp for uniqueness
 
   try {
     // 检查slug是否已存在
     const existingPost = await prisma.blogPost.findUnique({
-      where: { slug }
+      where: { slug: finalSlug }
     })
 
     if (existingPost) {
@@ -52,8 +62,8 @@ export default defineEventHandler(async (event) => {
       data: {
         title,
         content,
-        excerpt,
-        slug,
+        excerpt: finalExcerpt,
+        slug: finalSlug,
         coverImage,
         featuredImage,
         audioFile,
