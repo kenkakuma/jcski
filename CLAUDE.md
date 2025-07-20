@@ -4,10 +4,12 @@
 
 ### 🎯 基本信息
 - **项目名称**: JCSKI Personal Blog
-- **当前版本**: v0.4.0 (2025-07-19)
+- **当前版本**: v0.4.2 (2025-07-20)
 - **技术栈**: Nuxt 3 + TypeScript + SQLite + Prisma
 - **开发服务器**: http://localhost:3222
+- **生产网站**: http://jcski.com ✅ 正常运行
 - **项目路径**: /Users/eric/WebstormProjects/jcski
+- **GitHub仓库**: https://github.com/kenkakuma/jcski.git
 - **创建时间**: 2025-07-13
 
 ### 🌟 项目特色
@@ -195,7 +197,92 @@ ADMIN_PASSWORD="admin123456"
 
 ## 📝 版本历史
 
-### v0.4.0 (2025-07-19) - 置顶功能与特色图片系统完整实现 ⭐ 当前版本
+### v0.4.2 (2025-07-20) - 数据库路径问题完全修复与开发环境同步 ⭐ 当前版本
+**🎯 主要更新**
+- ✅ **API功能完全恢复**: 修复Prisma数据库路径问题，所有API端点正常工作
+- ✅ **环境变量统一管理**: 本地开发和生产环境配置分离，避免路径冲突
+- ✅ **管理后台完全可用**: 登录、文章管理、媒体管理等功能全部正常
+- ✅ **本地开发环境同步**: 将服务器修复同步到本地，确保开发部署一致性
+- ✅ **部署脚本优化**: 创建自动化部署修复脚本，防止future部署问题
+
+**🔧 核心问题解决**
+- **数据库路径统一**: Prisma schema使用环境变量，支持相对和绝对路径
+- **环境配置分离**: `.env` (本地) + `.env.production` (生产) 独立配置
+- **PM2配置优化**: 使用绝对路径和env_file确保生产环境稳定性
+- **完整重建**: 删除旧数据库重新创建，确保表结构一致性
+
+**📁 配置文件更新**
+```bash
+# 本地开发 (.env)
+DATABASE_URL="file:./prisma/dev.db"
+BASE_URL="http://localhost:3222"
+
+# 生产环境 (.env.production)  
+DATABASE_URL="file:/var/www/jcski-blog/prisma/dev.db"
+BASE_URL="http://jcski.com"
+
+# Prisma Schema
+datasource db {
+  provider = "sqlite"
+  url = env("DATABASE_URL")  # 统一使用环境变量
+}
+```
+
+**✅ 完整功能验证**
+- 网站前端：✅ 所有页面正常 (主页、音乐、滑雪、科技、钓鱼、关于)
+- API接口：✅ 完全正常 (/api/posts, /api/auth/login, /api/admin/*)
+- 管理后台：✅ 登录和所有管理功能可用
+- 身份验证：✅ JWT token生成和验证正常
+- 数据库：✅ SQLite连接稳定，所有表创建正确
+
+**🚀 自动化脚本**
+- `scripts/create-admin.js`: 管理员用户初始化
+- `scripts/deploy-fix.sh`: 部署环境修复脚本
+- 环境变量自动检测和配置
+
+**🎯 解决future部署问题**
+- 本地开发和生产环境完全同步
+- 环境变量驱动的配置管理
+- 自动化修复脚本防止路径问题重现
+- 完整的开发到生产部署工作流
+
+### v0.4.1 (2025-07-20) - GitHub自动部署与生产环境完整实现
+**🎯 主要更新**
+- ✅ GitHub Actions CI/CD配置：完整的自动部署工作流
+- ✅ AWS EC2生产环境：Amazon Linux + Nginx + PM2部署架构
+- ✅ 域名配置：jcski.com域名成功部署和DNS配置
+- ✅ 生产环境优化：环境变量管理、构建优化、服务器配置
+- ✅ 部署脚本完善：修复脚本、诊断脚本、自动化部署流程
+
+**🚀 GitHub自动部署架构**
+- 新仓库：https://github.com/kenkakuma/jcski.git
+- 工作流：.github/workflows/deploy.yml
+- 触发方式：推送到main分支或手动触发
+- 部署目标：AWS EC2 (54.168.203.21)
+- 环境管理：GitHub Secrets安全存储
+
+**🌐 生产环境配置**
+- 服务器：AWS EC2 Amazon Linux 2023
+- Node.js：v20.19.4 (升级解决兼容性问题)
+- 进程管理：PM2 with ecosystem.config.js
+- 反向代理：Nginx配置域名和SSL准备
+- 数据库：SQLite with Prisma ORM
+
+**🔧 技术问题解决**
+- 修复useRuntimeConfig JWT配置问题：改用process.env
+- 环境变量传递：PM2配置文件完整环境变量设置
+- 构建优化：Nuxt 3生产构建和静态资源优化
+- 服务器配置：Nginx反向代理和域名解析
+
+**✅ 部署状态**
+- 网站访问：http://jcski.com ✅ 正常运行
+- 前端功能：✅ 完全正常 (所有页面和交互)
+- 静态资源：✅ 正常加载 (CSS、JS、图片)
+- 数据库：✅ 连接正常 (SQLite + Prisma)
+- API功能：✅ 所有API端点正常 (v0.4.2修复)
+- 管理后台：✅ 完全可用 (v0.4.2修复)
+
+### v0.4.0 (2025-07-19) - 置顶功能与特色图片系统完整实现
 **🎯 主要更新**
 - ✅ 置顶文章功能：JCSKI NEWS与PRESS RELEASE区域功能分离
 - ✅ 特色图片系统：首页动态图片展示，支持特色图片与默认图片
@@ -490,6 +577,8 @@ ADMIN_PASSWORD="admin123456"
 ## 🎯 快速导航
 
 ### 📖 常用页面
+
+**开发环境 (本地)**
 - 🏠 **主页**: http://localhost:3222/
 - 🎵 **音乐**: http://localhost:3222/music  
 - 🎿 **滑雪**: http://localhost:3222/skiing
@@ -498,6 +587,16 @@ ADMIN_PASSWORD="admin123456"
 - 👤 **关于**: http://localhost:3222/about
 - 🔐 **管理登录**: http://localhost:3222/admin/login
 - 🛠️ **管理后台**: http://localhost:3222/admin
+
+**生产环境 (线上)**
+- 🌐 **主页**: http://jcski.com/
+- 🎵 **音乐**: http://jcski.com/music  
+- 🎿 **滑雪**: http://jcski.com/skiing
+- 💻 **科技**: http://jcski.com/tech
+- 🎣 **钓鱼**: http://jcski.com/fishing
+- 👤 **关于**: http://jcski.com/about
+- 🔐 **管理登录**: http://jcski.com/admin/login (⚠️ API问题)
+- 🛠️ **管理后台**: http://jcski.com/admin (⚠️ API问题)
 
 ### 🔧 开发工具
 - **开发服务器**: `npm run dev`
@@ -598,4 +697,67 @@ model BlogPost {
 
 ---
 
-*最后更新: 2025-07-19 | 当前版本: v0.4.0*
+---
+
+## 🚀 部署配置详情 (v0.4.1)
+
+### 📋 GitHub仓库信息
+- **仓库地址**: https://github.com/kenkakuma/jcski.git
+- **主分支**: main
+- **自动部署**: GitHub Actions
+- **部署目标**: AWS EC2 (54.168.203.21)
+
+### 🔧 CI/CD工作流
+**文件**: .github/workflows/deploy.yml
+**触发条件**: 
+- 推送到main分支
+- 手动触发 (workflow_dispatch)
+
+**部署步骤**:
+1. 检出代码
+2. 设置Node.js 18环境
+3. SSH连接到EC2
+4. 拉取最新代码
+5. 安装依赖和构建
+6. 重启PM2服务
+
+### 🌐 生产环境配置
+**服务器**: AWS EC2 Amazon Linux 2023
+- IP地址: 54.168.203.21
+- 域名: jcski.com
+- SSH密钥: Kowp.pem
+
+**软件环境**:
+- Node.js: v20.19.4
+- PM2: v6.0.8  
+- Nginx: 反向代理配置
+- SQLite: 数据库
+
+**关键配置文件**:
+- `ecosystem.config.js`: PM2配置
+- `.env.production`: 生产环境变量
+- `/etc/nginx/conf.d/jcski-blog.conf`: Nginx配置
+
+### 🔒 GitHub Secrets配置
+需要在GitHub仓库设置以下Secrets:
+- `EC2_HOST`: 54.168.203.21
+- `EC2_USER`: ec2-user
+- `EC2_SSH_KEY`: SSH私钥内容
+- `DATABASE_URL`: file:./prisma/dev.db
+- `JWT_SECRET`: 生产JWT密钥
+- `BASE_URL`: http://jcski.com
+
+### ⚡ 快速部署命令
+```bash
+# 本地推送触发自动部署
+git push origin main
+
+# 手动服务器操作
+ssh -i "Kowp.pem" ec2-user@54.168.203.21
+cd /var/www/jcski-blog
+pm2 restart jcski-blog
+```
+
+---
+
+*最后更新: 2025-07-20 | 当前版本: v0.4.1*
