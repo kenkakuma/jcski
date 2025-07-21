@@ -931,8 +931,249 @@ curl -s http://localhost | head -5
 - 确保自定义站点配置设为default_server
 - 定期验证代理是否正确工作
 
-**项目状态**: 🟢 生产就绪，功能完整，部署稳定，文章详情页功能完全可用
+**项目状态**: 🟢 生产就绪，功能完整，部署稳定，v0.4.8版本完整部署成功
 
 ---
 
-*最后更新: 2025-07-20 | 当前版本: v0.4.6 | 状态: 文章详情页功能完整实现，用户可完整浏览文章内容*
+## 🚨 部署修复记录和错误信息备份 (v0.4.8)
+
+### 📋 v0.4.8部署过程完整记录 (2025-07-21)
+
+#### 🎯 部署目标
+- **主要功能**: 文章详情页显示问题修复 + 子页面设计统一
+- **核心文件**: 
+  - `server/api/posts/[slug].get.ts` (新增文章详情页API)
+  - `assets/css/subpage.css` (统一子页面样式)
+  - `pages/posts/[slug].vue` (Tags字段JSON解析修复)
+
+#### ❌ GitHub Actions部署失败分析
+
+**问题现象**:
+- 连续多次GitHub Actions workflow运行失败 (status: completed/failure)
+- 检查URL: `curl -s "https://api.github.com/repos/kenkakuma/jcski/actions/runs?per_page=3"`
+- 失败时间: 2025-07-21T01:44:57Z, 2025-07-21T01:39:06Z, 2025-07-21T01:30:31Z
+
+**原因分析**:
+1. **自动部署工作流问题**: GitHub Actions SSH连接或执行失败
+2. **构建环境问题**: 可能的依赖安装或构建错误
+3. **PM2重启问题**: 应用重启过程中的错误
+4. **权限问题**: EC2服务器文件权限或目录访问问题
+
+**失败现象确认**:
+```bash
+# EC2仍显示旧版本
+curl -s "http://jcski.com/" | grep -o '<title>[^<]*</title>'
+# 输出: <title>JCSKI BLOG - jcski.com 正式部署 v0.4.1</title>
+
+# 新API路由404错误
+curl -I "http://jcski.com/api/posts/ec2-1753018794566"
+# 输出: HTTP/1.1 404 Page not found: /api/posts/ec2-1753018794566
+```
+
+#### ✅ 手动部署成功解决方案
+
+**修复策略**: 绕过GitHub Actions，直接SSH部署
+
+**成功部署脚本**: `deploy-manual.sh`
+```bash
+#!/bin/bash
+# 核心部署命令
+ssh -i ~/Documents/Kowp.pem ec2-user@54.168.203.21 << 'EOF'
+set -e
+cd /var/www/jcski-blog
+git fetch --all
+git reset --hard origin/main  # 强制重置，确保最新代码
+git pull origin main
+npm ci --production
+npx prisma generate
+npx prisma db push
+npm run build
+pm2 stop jcski-blog || echo "应用未运行"
+pm2 delete jcski-blog || echo "应用不存在" 
+pm2 start ecosystem.config.js
+pm2 save
+EOF
+```
+
+**部署验证成功标志**:
+```bash
+# 1. 代码更新确认
+当前commit: fe04305 fix: 改进GitHub Actions部署配置
+
+# 2. 关键文件存在确认
+server/api/posts/[slug].get.ts ✅
+assets/css/subpage.css ✅
+
+# 3. Nuxt构建成功确认
+.output/server/chunks/routes/api/posts/_slug_.get.mjs ✅
+
+# 4. PM2重启成功确认
+jcski-blog | online | pid: 101947 ✅
+```
+
+#### 🔧 关键技术修复详情
+
+**1. 文章详情页Tags字段JSON解析问题**
+
+**问题**: 数据库存储JSON字符串，Vue模板无法迭代导致页面无文字显示
+```javascript
+// 问题代码: v-for无法迭代字符串
+<span v-for="tag in article.tags" :key="tag">#{{ tag }}</span>
+// tags = '["图片上传", "媒体管理", "JCSKI", "测试"]' (字符串)
+```
+
+**解决方案**: `pages/posts/[slug].vue:229-237`
+```javascript
+if (typeof articleData.tags === 'string') {
+  try {
+    articleData.tags = JSON.parse(articleData.tags)
+  } catch (e) {
+    console.warn('Failed to parse tags JSON:', e)
+    articleData.tags = []
+  }
+}
+```
+
+**2. 子页面设计统一问题**
+
+**问题**: 各子页面字体、样式、导航不一致
+- 使用不同字体系统 (Helvetica Neue vs Special Gothic Expanded One)
+- 导航样式不统一
+- 响应式设计不一致
+
+**解决方案**: 创建`assets/css/subpage.css` (7915字节)
+```css
+.subpage {
+  font-family: 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans', 
+              ui-sans-serif, system-ui, sans-serif;
+}
+.nav-title {
+  font-family: "Special Gothic Expanded One", sans-serif;
+}
+```
+
+**3. API路由部署问题**
+
+**问题**: 新创建的`server/api/posts/[slug].get.ts`在生产环境404
+**原因**: GitHub Actions部署失败，文件未正确更新到EC2
+**解决**: 手动SSH部署确保文件传输和Nuxt构建正确执行
+
+#### 📊 部署成功验证清单
+
+**API功能验证**:
+```bash
+✅ 基础API: curl -s "http://jcski.com/api/posts" (正常)
+✅ 详情API: curl -s "http://jcski.com/api/posts/test-1753020544792" (正常)
+✅ 前端页面: curl -I "http://jcski.com/posts/test-1753020544792" (200状态)
+```
+
+**子页面统一验证**:
+```bash
+✅ MUSIC: <title>MUSIC - JCSKI BLOG</title>
+✅ TECH: <title>TECH - JCSKI BLOG</title>
+✅ SKIING: <title>SKIING - JCSKI BLOG</title>
+✅ FISHING: <title>FISHING - JCSKI BLOG</title>
+✅ ABOUT: <title>ABOUT - JCSKI BLOG</title>
+```
+
+#### 🚀 GitHub Actions部署配置改进
+
+**问题**: 原配置缺乏错误处理和调试信息
+**改进**: `.github/workflows/deploy.yml` 增强版
+```yaml
+script: |
+  set -e  # 遇到错误立即退出
+  echo "🚀 开始部署 v0.4.8..."
+  cd /var/www/jcski-blog
+  pwd && ls -la
+  git fetch --all
+  git reset --hard origin/main  # 强制重置
+  git pull origin main
+  echo "当前commit: $(git rev-parse HEAD)"
+  npm ci --production --verbose
+  npx prisma generate && npx prisma db push
+  NODE_ENV=production npm run build
+  echo "📁 检查关键文件是否存在..."
+  ls -la server/api/posts/
+  ls -la assets/css/ || echo "assets/css目录不存在"
+  pm2 stop jcski-blog || echo "应用未运行"
+  pm2 delete jcski-blog || echo "应用未存在"
+  pm2 start ecosystem.config.js && pm2 save
+  sleep 10 && pm2 status
+```
+
+#### 🎯 经验教训和预防措施
+
+**1. GitHub Actions可靠性问题**
+- **现象**: 连续失败但无具体错误信息
+- **预防**: 保持手动部署脚本作为备用方案
+- **监控**: 定期检查 `https://api.github.com/repos/[repo]/actions/runs`
+
+**2. 文件传输验证重要性**
+- **检查**: 部署后必须验证关键文件是否存在
+- **命令**: `ls -la server/api/posts/` 和 `ls -la assets/css/`
+
+**3. 数据库字段格式统一**
+- **问题**: JSON字段存储格式不一致导致前端解析失败
+- **方案**: 前端增加兼容性处理，后端标准化输出格式
+
+#### 🔍 故障排查命令集合
+
+**GitHub Actions状态检查**:
+```bash
+curl -s "https://api.github.com/repos/kenkakuma/jcski/actions/runs?per_page=3"
+```
+
+**生产环境验证**:
+```bash
+# 基础功能
+curl -I "http://jcski.com/"
+curl -s "http://jcski.com/api/posts" | head -20
+
+# 文章详情页
+curl -I "http://jcski.com/api/posts/[slug]"
+curl -I "http://jcski.com/posts/[slug]"
+
+# 子页面检查  
+curl -s "http://jcski.com/tech" | grep '<title>'
+```
+
+**EC2服务器检查**:
+```bash
+ssh -i ~/Documents/Kowp.pem ec2-user@54.168.203.21
+cd /var/www/jcski-blog
+git log --oneline -3
+ls -la server/api/posts/
+pm2 status
+```
+
+**数据库内容验证**:
+```bash
+curl -s "http://jcski.com/api/posts" | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+posts = data.get('posts', [])
+for post in posts:
+    print(f'- {post[\"title\"]} (slug: {post[\"slug\"]})')
+"
+```
+
+#### 📈 部署成功指标
+
+**最终状态 (2025-07-21 08:30)**:
+- ✅ **版本**: v0.4.8完整部署
+- ✅ **API**: 所有端点正常响应  
+- ✅ **前端**: 文章详情页功能完整
+- ✅ **设计**: 子页面JCSKI风格统一
+- ✅ **修复**: Tags字段JSON解析问题解决
+- ✅ **性能**: PM2进程稳定运行
+
+**用户体验验证**:
+- 文章详情页完整浏览体验 ✅
+- 子页面设计风格一致性 ✅  
+- 标签系统正常显示 ✅
+- 移动端响应式适配 ✅
+
+---
+
+*最后更新: 2025-07-21 | 当前版本: v0.4.8 | 状态: 完整部署成功，包含完整的故障排查和修复记录*
