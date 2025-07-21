@@ -1,8 +1,8 @@
 import { prisma } from '~/lib/prisma'
+import { withCache, CacheKeys } from '~/lib/cache'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
-  console.log('API called for slug:', slug)
 
   if (!slug) {
     throw createError({
@@ -12,22 +12,28 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // 获取文章详情
-    const post = await prisma.blogPost.findFirst({
-      where: {
-        slug: slug,
-        published: true
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            username: true,
-            email: true
+    // 使用缓存获取文章详情
+    const post = await withCache(
+      CacheKeys.POST_DETAIL(slug),
+      async () => {
+        return await prisma.blogPost.findFirst({
+          where: {
+            slug: slug,
+            published: true
+          },
+          include: {
+            author: {
+              select: {
+                id: true,
+                username: true,
+                email: true
+              }
+            }
           }
-        }
-      }
-    })
+        })
+      },
+      10 * 60 * 1000 // 10分钟缓存（文章内容相对稳定）
+    )
 
     if (!post) {
       throw createError({

@@ -86,7 +86,12 @@
         <div class="article-content">
           <!-- Featured Image -->
           <div v-if="article.coverImage || article.featuredImage" class="featured-image">
-            <img :src="article.coverImage || article.featuredImage" :alt="article.title" />
+            <OptimizedImage 
+              :src="article.coverImage || article.featuredImage" 
+              :alt="article.title"
+              height="400px"
+              :placeholder="true"
+            />
           </div>
           
           <!-- Audio Player -->
@@ -155,10 +160,12 @@
               >
                 <a :href="`/posts/${related.slug}`">
                   <div class="related-image">
-                    <img 
+                    <OptimizedImage 
                       :src="related.featuredImage || getDefaultImage(related.category)" 
                       :alt="related.title"
                       class="related-img"
+                      height="120px"
+                      :placeholder="true"
                     />
                   </div>
                   <div class="related-content">

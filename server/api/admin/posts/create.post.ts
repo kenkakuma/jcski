@@ -1,5 +1,6 @@
 import { prisma } from '~/lib/prisma'
 import { verifyToken } from '~/utils/auth'
+import { CacheInvalidation } from '~/lib/cache'
 
 export default defineEventHandler(async (event) => {
   if (event.node.req.method !== 'POST') {
@@ -83,6 +84,9 @@ export default defineEventHandler(async (event) => {
         }
       }
     })
+
+    // 清除相关缓存
+    CacheInvalidation.invalidatePostCaches()
 
     return {
       success: true,

@@ -106,10 +106,12 @@
             <article v-for="(post, index) in pinnedPosts.slice(0, 6)" :key="post.id" class="news-program-card">
               <a :href="`/posts/${post.slug}`" class="news-card-link">
                 <div class="program-image">
-                  <img 
+                  <OptimizedImage 
                     :src="post.featuredImage || getDefaultImage(post.category)" 
                     :alt="post.title" 
-                    class="program-img" 
+                    class="program-img"
+                    height="200px"
+                    :placeholder="true"
                   />
                   <div class="program-status-bar"></div>
                 </div>
@@ -129,7 +131,13 @@
             <!-- 如果置顶文章数量不足6篇，用占位符填充 -->
             <article v-for="i in Math.max(0, 6 - pinnedPosts.length)" :key="`placeholder-${i}`" class="news-program-card placeholder">
               <div class="program-image">
-                <img src="/images/news.jpg" alt="Coming Soon" class="program-img" />
+                <LazyImage 
+                  src="/images/news.jpg" 
+                  alt="Coming Soon" 
+                  class="program-img"
+                  height="200px"
+                  :placeholder="true"
+                />
                 <div class="program-status-bar"></div>
               </div>
               <div class="program-info">
