@@ -253,11 +253,14 @@ curl -I "http://jcski.com/" 2>/dev/null | head -1 || echo "   ❌ 网站无响�
 
 ### 部署成功标准 ✅
 - [ ] GitHub Actions运行成功 OR 手动部署完成
-- [ ] 网站首页返回200状态
-- [ ] API基础功能正常 (`/api/posts` 返回文章列表)
-- [ ] 文章详情页API正常 (`/api/posts/[slug]` 返回200)
-- [ ] 文章详情页前端正常 (`/posts/[slug]` 返回200)
+- [ ] HTTPS网站首页返回200状态 (`https://jcski.com`)
+- [ ] HTTP自动重定向到HTTPS (`http://jcski.com` → `https://jcski.com`)
+- [ ] API基础功能正常 (`https://jcski.com/api/posts` 返回文章列表)
+- [ ] 文章详情页API正常 (`https://jcski.com/api/posts/[slug]` 返回200)
+- [ ] 文章详情页前端正常 (`https://jcski.com/posts/[slug]` 返回200)
+- [ ] 所有子页面HTTPS访问正常 (music/tech/skiing/fishing/about)
 - [ ] 所有子页面标题格式统一 (`[PAGE] - JCSKI BLOG`)
+- [ ] SSL证书有效且自动续期已配置
 - [ ] PM2显示应用在线状态
 - [ ] 关键功能无明显错误
 
@@ -327,3 +330,100 @@ pm2 restart jcski-blog
 5. 🎯 预防措施标准 (代码 + 部署 + 监控)
 
 **确保每次部署的可靠性、可预测性和可恢复性！** 🎉
+
+---
+
+## 🔐 HTTPS/SSL配置标准 (v0.4.8+)
+
+### SSL证书管理标准
+
+**初始配置**:
+```bash
+# 1. 安装Certbot
+sudo dnf install -y certbot python3-certbot-nginx
+
+# 2. 申请SSL证书
+sudo certbot --nginx -d jcski.com -d www.jcski.com \
+    --non-interactive \
+    --agree-tos \
+    --email kenkakuma@outlook.com \
+    --redirect
+
+# 3. 配置自动续期
+sudo systemctl start certbot-renew.timer
+sudo systemctl enable certbot-renew.timer
+```
+
+**验证标准**:
+```bash
+# HTTPS访问验证
+curl -I "https://jcski.com/" | head -1
+
+# HTTP重定向验证  
+curl -I "http://jcski.com/" | grep -E "(301|Location)"
+
+# API HTTPS功能验证
+curl -s "https://jcski.com/api/posts" | head -20
+
+# 子页面HTTPS验证
+for page in music tech skiing fishing about; do
+    curl -I "https://jcski.com/$page" 2>/dev/null | head -1
+done
+
+# SSL证书状态检查
+sudo certbot certificates
+```
+
+**证书续期监控**:
+```bash
+# 检查自动续期状态
+sudo systemctl status certbot-renew.timer
+
+# 手动测试续期 (dry run)
+sudo certbot renew --dry-run
+
+# 查看证书到期时间
+sudo certbot certificates | grep "Expiry Date"
+```
+
+### HTTPS安全标准
+
+**Nginx SSL配置优化** (由Certbot自动管理):
+- SSL证书路径: `/etc/letsencrypt/live/jcski.com/`
+- 安全配置文件: `/etc/letsencrypt/options-ssl-nginx.conf`
+- DH参数文件: `/etc/letsencrypt/ssl-dhparams.pem`
+
+**强制HTTPS重定向**:
+- HTTP访问自动301重定向到HTTPS
+- 确保所有API和页面都通过HTTPS访问
+- 支持 `jcski.com` 和 `www.jcski.com` 两个域名
+
+### 故障排查
+
+**常见SSL问题**:
+```bash
+# 证书过期检查
+sudo certbot certificates
+
+# Nginx配置验证
+sudo nginx -t
+
+# 443端口监听检查
+sudo netstat -tulpn | grep :443
+
+# SSL握手测试
+openssl s_client -connect jcski.com:443 -servername jcski.com
+```
+
+**应急处理**:
+```bash
+# 证书续期失败时手动续期
+sudo certbot renew --force-renewal
+
+# Nginx配置恢复
+sudo certbot --nginx -d jcski.com -d www.jcski.com --force-renewal
+
+# 重启相关服务
+sudo systemctl restart nginx
+sudo systemctl restart certbot-renew.timer
+```
