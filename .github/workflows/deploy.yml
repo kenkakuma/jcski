@@ -36,18 +36,43 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
+        timeout: 300
+        command_timeout: 60
         script: |
+          set -e  # 遇到错误立即退出
+          echo "🚀 开始部署 v0.4.8..."
+          
+          # 检查目录和权限
           cd /var/www/jcski-blog
+          pwd
+          ls -la
+          
           echo "📥 拉取最新代码..."
+          git fetch --all
+          git reset --hard origin/main
           git pull origin main
+          echo "当前commit: $(git rev-parse HEAD)"
+          
           echo "📦 安装依赖..."
-          npm ci --production
+          npm ci --production --verbose
+          
           echo "🗄️ 更新数据库..."
           npx prisma generate
           npx prisma db push
+          
           echo "🔨 构建应用..."
-          npm run build
+          NODE_ENV=production npm run build
+          
+          echo "📁 检查关键文件是否存在..."
+          ls -la server/api/posts/
+          ls -la assets/css/ || echo "assets/css目录不存在"
+          
           echo "🚀 重启应用..."
-          pm2 restart jcski-blog || pm2 start ecosystem.config.js
+          pm2 stop jcski-blog || echo "应用未运行"
+          pm2 delete jcski-blog || echo "应用未存在"
+          pm2 start ecosystem.config.js
           pm2 save
-          echo "✅ 部署完成！应用已重启"
+          
+          echo "✅ 部署完成！等待应用启动..."
+          sleep 10
+          pm2 status
