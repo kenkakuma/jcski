@@ -3,6 +3,10 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/content'
   ],
+  // Optimization settings
+  experimental: {
+    payloadExtraction: false // Reduce initial payload size
+  },
   css: ['~/assets/css/main.css'],
   devServer: {
     port: 3003
