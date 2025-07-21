@@ -1,13 +1,19 @@
 <template>
   <div ref="wrapperRef" class="optimized-image-wrapper" :style="{ height: height }">
-    <img
-      v-if="showImage"
-      :src="src"
-      :alt="alt"
-      :class="['optimized-image', { 'loaded': imageLoaded }]"
-      @load="onImageLoad"
-      @error="onImageError"
-    />
+    <picture v-if="showImage">
+      <source 
+        v-if="webpSupported && imageSources.webp !== imageSources.fallback"
+        :srcset="imageSources.webp" 
+        type="image/webp"
+      />
+      <img
+        :src="imageSources.fallback"
+        :alt="alt"
+        :class="['optimized-image', { 'loaded': imageLoaded }]"
+        @load="onImageLoad"
+        @error="onImageError"
+      />
+    </picture>
     <div v-else-if="showPlaceholder" class="image-placeholder" :style="{ height: height }">
       <div class="placeholder-content">
         <div class="loading-spinner"></div>
@@ -28,12 +34,16 @@ interface Props {
   alt?: string
   height?: string
   placeholder?: boolean
+  quality?: number
+  width?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   alt: '',
   height: 'auto',
-  placeholder: true
+  placeholder: true,
+  quality: 85,
+  width: undefined
 })
 
 const showImage = ref(false)
@@ -41,6 +51,16 @@ const showPlaceholder = ref(false)
 const imageLoaded = ref(false)
 const hasError = ref(false)
 const wrapperRef = ref<HTMLElement | null>(null)
+
+// WebP支持检测和图片源优化
+const { supportsWebP, getImageSources } = useWebP()
+const webpSupported = computed(() => supportsWebP.value === true)
+const imageSources = computed(() => {
+  return getImageSources(props.src, {
+    quality: props.quality,
+    width: props.width
+  })
+})
 
 let observer: IntersectionObserver | null = null
 
