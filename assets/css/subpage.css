@@ -1,0 +1,472 @@
+/* JCSKI 子页面通用样式 */
+
+/* Base Styles */
+.subpage {
+  font-family: 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #fff;
+  min-height: 100vh;
+}
+
+/* Top Navigation (JCSKI style) */
+.top-nav {
+  background: #fff;
+  border-bottom: 1px solid #000;
+  padding: 20px 0;
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.top-logo {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #000;
+  text-decoration: none;
+}
+
+.top-nav-menu {
+  display: flex;
+  gap: 24px;
+}
+
+.top-nav-item {
+  color: #000;
+  text-decoration: none;
+  padding: 8px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.top-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  transition: left 0.4s ease;
+  z-index: 1;
+}
+
+.top-nav-item:hover::before,
+.top-nav-item.active::before {
+  left: 0;
+}
+
+.top-nav-item:hover .nav-title,
+.top-nav-item:hover .nav-subtitle,
+.top-nav-item.active .nav-title,
+.top-nav-item.active .nav-subtitle {
+  color: #fff;
+}
+
+.nav-title {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #000;
+  margin-bottom: 2px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Main Container */
+.main-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content {
+  width: 100%;
+  padding: 40px 0;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 60px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #000;
+}
+
+.page-title {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 48px;
+  letter-spacing: 4px;
+  color: #000;
+  margin: 0 0 16px 0;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.header-decoration {
+  width: 60px;
+  height: 3px;
+  margin: 20px auto 0;
+}
+
+/* 主题色装饰线 */
+.music-decoration { background: linear-gradient(135deg, #9C27B0, #E1BEE7); }
+.tech-decoration { background: linear-gradient(135deg, #2196F3, #90CAF9); }
+.skiing-decoration { background: linear-gradient(135deg, #00BCD4, #80DEEA); }
+.fishing-decoration { background: linear-gradient(135deg, #4CAF50, #A5D6A7); }
+.about-decoration { background: linear-gradient(135deg, #666, #BBB); }
+
+/* Content Section */
+.content-section {
+  margin-bottom: 60px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+}
+
+/* Featured Article */
+.featured-article {
+  background: #fff;
+  border: 1px solid #eee;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.featured-article:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.article-image {
+  position: relative;
+  height: 300px;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* 主题渐变 */
+.music-gradient { background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%); }
+.tech-gradient { background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%); }
+.skiing-gradient { background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%); }
+.fishing-gradient { background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%); }
+.about-gradient { background: linear-gradient(135deg, #666 0%, #424242 100%); }
+
+.article-date {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.article-content {
+  padding: 24px;
+}
+
+.article-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+  color: #000;
+}
+
+.article-excerpt {
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+.article-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #f0f0f0;
+  color: #333;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-radius: 16px;
+  font-weight: 500;
+}
+
+/* Article List */
+.article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.article-item {
+  padding: 20px;
+  border: 1px solid #eee;
+  background: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.article-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.article-meta .article-date {
+  position: static;
+  background: none;
+  color: #999;
+  padding: 0;
+  font-size: 12px;
+  border-radius: 0;
+}
+
+.article-category {
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.article-item .article-title {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.article-item .article-excerpt {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Footer */
+.main-footer {
+  background: #000;
+  color: #fff;
+  padding: 40px 0 20px;
+  margin-top: 80px;
+}
+
+.footer-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+}
+
+.footer-logo {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0;
+}
+
+.footer-social {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.follow-text {
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+}
+
+.social-links {
+  display: flex;
+  gap: 12px;
+}
+
+.footer-social-link {
+  color: #999;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+.footer-social-link:hover {
+  color: #fff;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.footer-title {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 0 0 16px 0;
+}
+
+.footer-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-menu li {
+  margin-bottom: 8px;
+}
+
+.footer-link {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.5;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .article-list {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+  
+  .top-nav-menu {
+    gap: 16px;
+  }
+  
+  .top-nav-item {
+    padding: 6px 12px;
+  }
+  
+  .nav-title {
+    font-size: 12px;
+  }
+  
+  .nav-subtitle {
+    font-size: 9px;
+  }
+  
+  .footer-links {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .footer-brand {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-nav {
+    padding: 15px 0;
+  }
+  
+  .top-nav-menu {
+    gap: 8px;
+  }
+  
+  .top-nav-item {
+    padding: 4px 8px;
+  }
+  
+  .nav-title {
+    font-size: 10px;
+  }
+  
+  .nav-subtitle {
+    font-size: 8px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+  
+  .main-container {
+    padding: 0 15px;
+  }
+  
+  .article-item {
+    padding: 15px;
+  }
+}

@@ -104,24 +104,26 @@
           
           <div class="news-grid-six">
             <article v-for="(post, index) in pinnedPosts.slice(0, 6)" :key="post.id" class="news-program-card">
-              <div class="program-image">
-                <img 
-                  :src="post.featuredImage || getDefaultImage(post.category)" 
-                  :alt="post.title" 
-                  class="program-img" 
-                />
-                <div class="program-status-bar"></div>
-              </div>
-              <div class="program-info">
-                <div class="program-meta">
-                  <span class="program-date">{{ formatDate(post.createdAt) }} ON AIR</span>
-                  <span class="program-status">{{ post.category }}</span>
+              <a :href="`/posts/${post.slug}`" class="news-card-link">
+                <div class="program-image">
+                  <img 
+                    :src="post.featuredImage || getDefaultImage(post.category)" 
+                    :alt="post.title" 
+                    class="program-img" 
+                  />
+                  <div class="program-status-bar"></div>
                 </div>
-                <h3 class="program-title">📌 {{ post.title }}</h3>
-                <p class="program-description">
-                  {{ post.excerpt }}
-                </p>
-              </div>
+                <div class="program-info">
+                  <div class="program-meta">
+                    <span class="program-date">{{ formatDate(post.createdAt) }} ON AIR</span>
+                    <span class="program-status">{{ post.category }}</span>
+                  </div>
+                  <h3 class="program-title">📌 {{ post.title }}</h3>
+                  <p class="program-description">
+                    {{ post.excerpt }}
+                  </p>
+                </div>
+              </a>
             </article>
             
             <!-- 如果置顶文章数量不足6篇，用占位符填充 -->
@@ -162,12 +164,14 @@
             >
               <span class="press-marker">+</span>
               <div class="press-content">
-                <div class="press-title-row">
-                  <h3 class="press-title">{{ post.title }}</h3>
-                  <span class="press-category-tag" :class="getCategoryClass(post.category)">{{ post.category }}</span>
-                </div>
-                <p class="press-details">{{ post.excerpt }}</p>
-                <time class="press-date">{{ formatDate(post.createdAt) }}</time>
+                <a :href="`/posts/${post.slug}`" class="press-link">
+                  <div class="press-title-row">
+                    <h3 class="press-title">{{ post.title }}</h3>
+                    <span class="press-category-tag" :class="getCategoryClass(post.category)">{{ post.category }}</span>
+                  </div>
+                  <p class="press-details">{{ post.excerpt }}</p>
+                  <time class="press-date">{{ formatDate(post.createdAt) }}</time>
+                </a>
               </div>
             </article>
           </div>
@@ -858,6 +862,14 @@ useHead({
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
+.news-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .news-program-card.placeholder {
   opacity: 0.6;
 }
@@ -962,6 +974,14 @@ useHead({
   gap: 16px;
   padding-bottom: 20px;
   border-bottom: 1px solid #eee;
+  transition: all 0.3s ease;
+}
+
+.press-item:hover {
+  background: #f9f9f9;
+  padding-left: 8px;
+  margin-left: -8px;
+  border-radius: 4px;
 }
 
 .press-marker {
@@ -973,6 +993,12 @@ useHead({
 
 .press-content {
   flex: 1;
+}
+
+.press-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
 .press-title-row {

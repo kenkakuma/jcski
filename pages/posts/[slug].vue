@@ -1,44 +1,76 @@
 <template>
-  <div class="article-page">
+  <div class="post-detail-page">
+    <!-- Top Navigation Bar (JCSKI style) -->
     <nav class="top-nav">
       <div class="nav-container">
-        <div class="logo">
-          <NuxtLink to="/">JCSKI BLOG</NuxtLink>
+        <a href="/" class="top-logo">JCSKI BLOG</a>
+        <div class="top-nav-menu">
+          <a href="/music" class="top-nav-item">
+            <span class="nav-title">MUSIC</span>
+            <span class="nav-subtitle">音楽</span>
+          </a>
+          <a href="/skiing" class="top-nav-item">
+            <span class="nav-title">SKIING</span>
+            <span class="nav-subtitle">スキー</span>
+          </a>
+          <a href="/tech" class="top-nav-item">
+            <span class="nav-title">TECH</span>
+            <span class="nav-subtitle">テクノロジー</span>
+          </a>
+          <a href="/fishing" class="top-nav-item">
+            <span class="nav-title">FISHING</span>
+            <span class="nav-subtitle">釣り</span>
+          </a>
+          <a href="/about" class="top-nav-item">
+            <span class="nav-title">ABOUT</span>
+            <span class="nav-subtitle">プロフィール</span>
+          </a>
         </div>
-        <ul class="nav-menu">
-          <li><NuxtLink to="/">HOME</NuxtLink></li>
-          <li><NuxtLink to="/about">ABOUT</NuxtLink></li>
-          <li><NuxtLink to="/category/tech">TECH</NuxtLink></li>
-          <li><NuxtLink to="/category/music">MUSIC</NuxtLink></li>
-          <li><NuxtLink to="/category/life">LIFE</NuxtLink></li>
-          <li><NuxtLink to="/contact">CONTACT</NuxtLink></li>
-        </ul>
       </div>
     </nav>
 
-    <div class="article-container">
+    <!-- Loading State -->
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner">記事を読み込み中...</div>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="error-container">
+      <div class="error-message">
+        <h2>記事が見つかりません</h2>
+        <p>{{ error }}</p>
+        <a href="/" class="back-home-btn">ホームに戻る</a>
+      </div>
+    </div>
+
+    <!-- Article Content -->
+    <div v-else-if="article" class="article-container">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="/" class="breadcrumb-item">HOME</a>
+        <span class="breadcrumb-separator">></span>
+        <span class="breadcrumb-current">{{ article.title }}</span>
+      </nav>
+
       <!-- Article Header -->
       <header class="article-header">
-        <div class="breadcrumb">
-          <NuxtLink to="/">HOME</NuxtLink>
-          <span>/</span>
-          <NuxtLink :to="`/category/${article.category.toLowerCase()}`">{{ article.category }}</NuxtLink>
-          <span>/</span>
-          <span>{{ article.title }}</span>
-        </div>
-        
         <div class="article-meta-info">
-          <div class="category-badge" :class="article.category.toLowerCase()">
+          <div class="category-badge" :class="getCategoryClass(article.category)">
             {{ article.category }}
           </div>
-          <time class="publish-date">{{ formatDate(article.publishedAt) }}</time>
-          <div class="read-time">{{ article.readTime }} min read</div>
+          <span class="article-pin" v-if="article.isPinned">📌 PINNED</span>
+          <time class="publish-date">{{ formatDate(article.createdAt) }}</time>
         </div>
         
         <h1 class="article-title">{{ article.title }}</h1>
         <p class="article-excerpt">{{ article.excerpt }}</p>
         
-        <div class="article-tags">
+        <div class="article-author-info">
+          <span class="author-label">著者:</span>
+          <span class="author-name">{{ article.author?.username || 'JCSKI' }}</span>
+        </div>
+
+        <div class="article-tags" v-if="article.tags && article.tags.length > 0">
           <span 
             v-for="tag in article.tags" 
             :key="tag" 
@@ -53,8 +85,8 @@
       <main class="article-main">
         <div class="article-content">
           <!-- Featured Image -->
-          <div v-if="article.coverImage" class="featured-image">
-            <img :src="article.coverImage" :alt="article.title" />
+          <div v-if="article.coverImage || article.featuredImage" class="featured-image">
+            <img :src="article.coverImage || article.featuredImage" :alt="article.title" />
           </div>
           
           <!-- Audio Player -->
@@ -66,7 +98,7 @@
           </div>
           
           <!-- Article Body -->
-          <div class="article-body" v-html="article.content"></div>
+          <div class="article-body" v-html="formattedContent"></div>
           
           <!-- Author Info -->
           <div class="author-section">
@@ -121,11 +153,21 @@
                 :key="related.slug"
                 class="related-item"
               >
-                <NuxtLink :to="`/posts/${related.slug}`">
-                  <div class="related-image">{{ related.category }}</div>
-                  <h4>{{ related.title }}</h4>
-                  <p>{{ related.excerpt }}</p>
-                </NuxtLink>
+                <a :href="`/posts/${related.slug}`">
+                  <div class="related-image">
+                    <img 
+                      :src="related.featuredImage || getDefaultImage(related.category)" 
+                      :alt="related.title"
+                      class="related-img"
+                    />
+                  </div>
+                  <div class="related-content">
+                    <span class="related-category">{{ related.category }}</span>
+                    <h4>{{ related.title }}</h4>
+                    <p>{{ related.excerpt }}</p>
+                    <time class="related-date">{{ formatDate(related.createdAt) }}</time>
+                  </div>
+                </a>
               </article>
             </div>
           </div>
@@ -135,17 +177,17 @@
       <!-- Navigation -->
       <nav class="article-navigation">
         <div class="nav-item prev" v-if="prevArticle">
-          <NuxtLink :to="`/posts/${prevArticle.slug}`">
+          <a :href="`/posts/${prevArticle.slug}`">
             <span class="nav-label">← 前の記事</span>
             <span class="nav-title">{{ prevArticle.title }}</span>
-          </NuxtLink>
+          </a>
         </div>
         
         <div class="nav-item next" v-if="nextArticle">
-          <NuxtLink :to="`/posts/${nextArticle.slug}`">
+          <a :href="`/posts/${nextArticle.slug}`">
             <span class="nav-label">次の記事 →</span>
             <span class="nav-title">{{ nextArticle.title }}</span>
-          </NuxtLink>
+          </a>
         </div>
       </nav>
 
@@ -160,81 +202,106 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
+import type { BlogPost } from '~/types'
+
 const route = useRoute()
-const slug = route.params.slug
+const slug = route.params.slug as string
 
-// Mock article data - replace with actual API call
-const article = ref({
-  slug: slug,
-  title: 'Nuxt 3とVuetifyで構築するモダンブログシステム - 完全ガイド',
-  excerpt: 'Nuxt 3とVuetifyを使用してモダンなブログシステムを構築する方法を詳しく解説します。TypeScriptの型安全性とSSR/SSGの最適化についても触れていきます。',
-  content: `
-    <h2 id="introduction">はじめに</h2>
-    <p>現代のWeb開発において、パフォーマンスとユーザーエクスペリエンスの両方を満たすブログシステムの構築は重要な課題です。この記事では、Nuxt 3とVuetifyを組み合わせて、高速で美しいブログシステムを構築する方法を解説します。</p>
-    
-    <h2 id="main-content">Nuxt 3の基本設定</h2>
-    <p>まずは、Nuxt 3プロジェクトのセットアップから始めましょう。</p>
-    
-    <pre><code>npx nuxi@latest init my-blog
-cd my-blog
-npm install</code></pre>
-    
-    <p>次に、必要な依存関係をインストールします：</p>
-    
-    <pre><code>npm install @nuxt/content
-npm install vuetify
-npm install @mdi/font</code></pre>
-    
-    <h2 id="examples">実例とサンプル</h2>
-    <p>以下は、実際のコンポーネントの例です。</p>
-    
-    <h2 id="conclusion">まとめ</h2>
-    <p>Nuxt 3とVuetifyの組み合わせにより、モダンで高速なブログシステムを構築することができました。TypeScriptの型安全性とSSR/SSGの恩恵を受けながら、美しいUIを実現できます。</p>
-  `,
-  category: 'TECH',
-  tags: ['Nuxt3', 'Vue.js', 'TypeScript', 'Web開発'],
-  publishedAt: '2025-07-13',
-  readTime: 8,
-  coverImage: null,
-  audioFile: null
-})
+// Reactive data
+const article = ref<BlogPost | null>(null)
+const relatedArticles = ref<BlogPost[]>([])
+const prevArticle = ref<BlogPost | null>(null)
+const nextArticle = ref<BlogPost | null>(null)
+const loading = ref(true)
+const error = ref<string | null>(null)
 
-// Mock related articles
-const relatedArticles = ref([
-  {
-    slug: 'typescript-best-practices',
-    title: 'TypeScriptでの型安全なWeb開発 - ベストプラクティス集',
-    excerpt: 'TypeScriptを使用したWeb開発における型安全性のベストプラクティスを紹介します。',
-    category: 'TECH'
-  },
-  {
-    slug: 'web-audio-api-guide',
-    title: 'Web Audio APIで音楽アプリケーションを作る - 基礎から応用まで',
-    excerpt: 'Web Audio APIを使用して音楽アプリケーションを構築する方法を詳しく解説します。',
-    category: 'TECH'
+// Fetch post data
+const fetchPost = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    const response = await $fetch(`/api/posts/${slug}`)
+    
+    if (response && response.success && response.data) {
+      // 解析tags字段（如果是JSON字符串）
+      const articleData = { ...response.data }
+      if (typeof articleData.tags === 'string') {
+        try {
+          articleData.tags = JSON.parse(articleData.tags)
+        } catch (e) {
+          console.warn('Failed to parse tags JSON:', e)
+          articleData.tags = []
+        }
+      }
+      
+      article.value = articleData
+      relatedArticles.value = response.related || []
+      prevArticle.value = response.navigation?.previous || null
+      nextArticle.value = response.navigation?.next || null
+    } else {
+      error.value = '記事が見つかりません'
+    }
+  } catch (err: any) {
+    console.error('Error fetching post:', err)
+    error.value = '記事の読み込みに失敗しました'
+  } finally {
+    loading.value = false
   }
-])
+}
 
-// Mock navigation articles
-const prevArticle = ref({
-  slug: 'previous-article',
-  title: '前の記事のタイトル'
+// Initialize
+onMounted(() => {
+  fetchPost()
 })
 
-const nextArticle = ref({
-  slug: 'next-article', 
-  title: '次の記事のタイトル'
+// Computed properties
+const formattedContent = computed(() => {
+  if (!article.value?.content) return ''
+  
+  // Simple HTML formatting for now
+  // In the future, this could support Markdown rendering
+  return article.value.content.replace(/\n/g, '<br>')
 })
 
 // Helper functions
-const formatDate = (dateString) => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('ja-JP', {
+const formatDate = (date: Date | string) => {
+  const d = new Date(date)
+  return d.toLocaleDateString('ja-JP', {
     year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
+    month: '2-digit',
+    day: '2-digit'
+  }).replace(/\//g, '.')
+}
+
+const getCategoryClass = (category: string) => {
+  const categoryMap: { [key: string]: string } = {
+    'MUSIC': 'category-music',
+    'TECH': 'category-tech', 
+    'SKIING': 'category-skiing',
+    'FISHING': 'category-fishing',
+    'BLOG': 'category-blog',
+    'NEWS': 'category-news',
+    'GAMING': 'category-gaming',
+    'PODCAST': 'category-podcast'
+  }
+  return categoryMap[category] || 'category-default'
+}
+
+const getDefaultImage = (category: string) => {
+  const imageMap: { [key: string]: string } = {
+    'MUSIC': '/images/music.jpg',
+    'TECH': '/images/tech.jpg',
+    'SKIING': '/images/skiing.jpg',
+    'FISHING': '/images/fishing.jpg',
+    'BLOG': '/images/news.jpg',
+    'NEWS': '/images/news.jpg',
+    'GAMING': '/images/gaming.jpg',
+    'PODCAST': '/images/music.jpg'
+  }
+  return imageMap[category] || '/images/news.jpg'
 }
 
 const shareToTwitter = () => {
@@ -257,23 +324,173 @@ const copyUrl = async () => {
   }
 }
 
-// SEO
+// SEO Meta
 useHead({
-  title: `${article.value.title} - JCSKI Blog`,
+  title: computed(() => article.value ? `${article.value.title} | JCSKI BLOG` : 'Loading... | JCSKI BLOG'),
   meta: [
-    { name: 'description', content: article.value.excerpt },
-    { property: 'og:title', content: article.value.title },
-    { property: 'og:description', content: article.value.excerpt },
-    { property: 'og:type', content: 'article' },
-    { name: 'keywords', content: article.value.tags.join(', ') }
+    {
+      name: 'description',
+      content: computed(() => article.value?.excerpt || 'JCSKI Blog Article')
+    },
+    {
+      property: 'og:title',
+      content: computed(() => article.value?.title || 'JCSKI BLOG')
+    },
+    {
+      property: 'og:description', 
+      content: computed(() => article.value?.excerpt || 'JCSKI Blog Article')
+    },
+    {
+      property: 'og:image',
+      content: computed(() => article.value?.featuredImage || article.value?.coverImage || '/images/news.jpg')
+    },
+    {
+      property: 'og:type',
+      content: 'article'
+    },
+    {
+      name: 'keywords',
+      content: computed(() => article.value?.tags?.join(', ') || 'JCSKI, Blog')
+    }
   ]
 })
 </script>
 
 <style scoped>
-.article-page {
+/* Base Styles */
+.post-detail-page {
+  font-family: 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #fff;
   min-height: 100vh;
-  background-color: #ffffff;
+}
+
+/* Top Navigation (JCSKI style) */
+.top-nav {
+  background: #fff;
+  border-bottom: 1px solid #000;
+  padding: 20px 0;
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.top-logo {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: #000;
+  text-decoration: none;
+}
+
+.top-nav-menu {
+  display: flex;
+  gap: 24px;
+}
+
+.top-nav-item {
+  color: #000;
+  text-decoration: none;
+  padding: 8px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.top-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  transition: left 0.4s ease;
+  z-index: 1;
+}
+
+.top-nav-item:hover::before {
+  left: 0;
+}
+
+.top-nav-item:hover .nav-title,
+.top-nav-item:hover .nav-subtitle {
+  color: #fff;
+}
+
+.nav-title {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: #000;
+  margin-bottom: 2px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.5px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Loading and Error States */
+.loading-container, .error-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message h2 {
+  font-family: "Special Gothic Expanded One", sans-serif;
+  font-size: 24px;
+  margin-bottom: 16px;
+  color: #000;
+}
+
+.error-message p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.back-home-btn {
+  display: inline-block;
+  background: #000;
+  color: #fff;
+  padding: 12px 24px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.back-home-btn:hover {
+  background: #333;
 }
 
 .article-container {
@@ -319,17 +536,16 @@ useHead({
   color: white;
 }
 
-.category-badge.tech {
-  background: #4a90e2;
-}
-
-.category-badge.music {
-  background: #ff6b6b;
-}
-
-.category-badge.life {
-  background: #26de81;
-}
+/* Category Colors (JCSKI style) */
+.category-music { background: #9C27B0; }
+.category-tech { background: #2196F3; }
+.category-skiing { background: #00BCD4; }
+.category-fishing { background: #4CAF50; }
+.category-blog { background: #FF9800; }
+.category-news { background: #F44336; }
+.category-gaming { background: #E91E63; }
+.category-podcast { background: #795548; }
+.category-default { background: #000; }
 
 .publish-date, .read-time {
   font-size: 14px;
