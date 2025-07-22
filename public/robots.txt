@@ -1,0 +1,26 @@
+# JCSKI Blog - Robots.txt
+# 优化搜索引擎抓取和索引
+
+User-agent: *
+Allow: /
+
+# 允许搜索引擎访问所有内容
+Allow: /music
+Allow: /tech
+Allow: /skiing
+Allow: /fishing
+Allow: /about
+Allow: /posts/
+
+# 禁止访问管理后台和API
+Disallow: /admin/
+Disallow: /api/
+
+# 禁止访问上传文件目录(如果包含敏感信息)
+Allow: /uploads/
+
+# XML Sitemap位置
+Sitemap: https://jcski.com/sitemap.xml
+
+# 抓取延迟(可选，对大型爬虫友好)
+Crawl-delay: 1

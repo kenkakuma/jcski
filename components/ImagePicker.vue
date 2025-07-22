@@ -3,7 +3,13 @@
     <!-- Trigger Button -->
     <div class="picker-trigger" @click="showPicker = true">
       <div v-if="selectedImage" class="selected-image">
-        <img :src="selectedImage" :alt="placeholder" class="preview-img">
+        <SmartImage 
+          :src="selectedImage" 
+          :alt="placeholder" 
+          class="preview-img"
+          :show-loading-placeholder="true"
+          :show-error-placeholder="true"
+        />
         <div class="image-overlay">
           <span>点击更换图片</span>
         </div>
@@ -36,6 +42,12 @@
               @click="activeTab = 'library'"
             >
               从媒体库选择
+            </button>
+            <button 
+              :class="['tab-btn', { active: activeTab === 'external' }]"
+              @click="activeTab = 'external'"
+            >
+              第三方图片
             </button>
           </div>
 
@@ -83,6 +95,14 @@
               @cancel="showPicker = false"
             />
           </div>
+
+          <!-- External Image Tab Content -->
+          <div v-if="activeTab === 'external'" class="tab-content">
+            <ExternalImagePicker
+              @close="showPicker = false"
+              @confirm="handleExternalImageSelect"
+            />
+          </div>
         </div>
 
         <div class="modal-footer">
@@ -109,6 +129,9 @@
 
 <script setup>
 import AdminMedia from './AdminMedia.vue'
+import SmartImage from './SmartImage.vue'
+import ExternalImagePicker from './ExternalImagePicker.vue'
+import { resolveImagePath } from '~/utils/media'
 
 const props = defineProps({
   modelValue: {
@@ -136,7 +159,13 @@ const selectedImage = computed({
 })
 
 const handleImageSelect = (file) => {
-  tempImage.value = file.path
+  tempImage.value = resolveImagePath(file.path)
+}
+
+const handleExternalImageSelect = (imageData) => {
+  tempImage.value = imageData.url
+  showPicker.value = false
+  selectedImage.value = imageData.url
 }
 
 const confirmSelection = () => {

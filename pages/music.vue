@@ -154,11 +154,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'MUSIC - JCSKI BLOG',
-  meta: [
-    { name: 'description', content: '音乐创作与分享，包括音乐制作技巧、设备推荐、作品展示等内容。' }
-  ]
+// SEO and JSON-LD setup
+const { setCategorySEO } = useSEO()
+const { generateCategoryJsonLD, applyJsonLD } = useJsonLD()
+
+onMounted(() => {
+  setCategorySEO('MUSIC')
+  
+  // 应用MUSIC分类页面JSON-LD结构化数据
+  const musicJsonLD = generateCategoryJsonLD('MUSIC')
+  applyJsonLD(musicJsonLD)
 })
 </script>
 

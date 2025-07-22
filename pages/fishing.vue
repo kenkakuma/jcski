@@ -155,11 +155,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'FISHING - JCSKI BLOG',
-  meta: [
-    { name: 'description', content: '钓鱼生活与户外体验，包括钓鱼技巧、装备推荐、钓点攻略、鱼类百科等内容。' }
-  ]
+// SEO and JSON-LD setup
+const { setCategorySEO } = useSEO()
+const { generateCategoryJsonLD, applyJsonLD } = useJsonLD()
+
+onMounted(() => {
+  setCategorySEO('FISHING')
+  
+  // 应用FISHING分类页面JSON-LD结构化数据
+  const fishingJsonLD = generateCategoryJsonLD('FISHING')
+  applyJsonLD(fishingJsonLD)
 })
 </script>
 

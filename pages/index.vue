@@ -106,12 +106,15 @@
             <article v-for="(post, index) in pinnedPosts.slice(0, 6)" :key="post.id" class="news-program-card">
               <a :href="`/posts/${post.slug}`" class="news-card-link">
                 <div class="program-image">
-                  <OptimizedImage 
-                    :src="post.featuredImage || getDefaultImage(post.category)" 
+                  <SmartImage 
+                    :src="post.featuredImage" 
+                    :fallback="getDefaultImage(post.category)"
                     :alt="post.title" 
+                    :category="post.category"
                     class="program-img"
                     height="200px"
-                    :placeholder="true"
+                    :show-loading-placeholder="true"
+                    :show-error-placeholder="true"
                   />
                   <div class="program-status-bar"></div>
                 </div>
@@ -131,12 +134,13 @@
             <!-- 如果置顶文章数量不足6篇，用占位符填充 -->
             <article v-for="i in Math.max(0, 6 - pinnedPosts.length)" :key="`placeholder-${i}`" class="news-program-card placeholder">
               <div class="program-image">
-                <LazyImage 
+                <SmartImage 
                   src="/images/news.jpg" 
                   alt="Coming Soon" 
                   class="program-img"
                   height="200px"
-                  :placeholder="true"
+                  :show-loading-placeholder="true"
+                  :show-error-placeholder="true"
                 />
                 <div class="program-status-bar"></div>
               </div>
@@ -240,6 +244,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import type { HeroContent, BlogPost } from '~/types'
+import SmartImage from '~/components/SmartImage.vue'
+import { getDefaultImage } from '~/utils/media'
+
+// v0.5.0 步骤17 - 关键资源预加载
+const { 
+  preloadPageResources, 
+  setupInteractionPreload,
+  autoPreloadCurrentPage,
+  preloadImage
+} = useCriticalPreload()
 
 // 响应式数据
 const heroContents = ref<HeroContent[]>([])
@@ -349,32 +363,34 @@ const getCategoryClass = (category: string) => {
   return 'category-unified'
 }
 
-// 根据分类获取默认图片
-const getDefaultImage = (category: string) => {
-  const imageMap: { [key: string]: string } = {
-    'MUSIC': '/images/music.jpg',
-    'TECH': '/images/tech.jpg',
-    'SKIING': '/images/skiing.jpg',
-    'FISHING': '/images/fishing.jpg',
-    'BLOG': '/images/news.jpg',
-    'NEWS': '/images/news.jpg',
-    'GAMING': '/images/gaming.jpg',
-    'PODCAST': '/images/music.jpg'
-  }
-  return imageMap[category] || '/images/news.jpg'
-}
+// getDefaultImage is now imported from utils/media
+
+// SEO and JSON-LD setup
+const { setHomeSEO } = useSEO()
+const { generateHomePageJsonLD, applyJsonLD } = useJsonLD()
+
 
 onMounted(() => {
   fetchHeroContents()
   fetchPinnedPosts()
   fetchRecentPosts()
-})
-
-useHead({
-  title: 'JCSKI BLOG - jcski.com 正式部署 v0.4.1',
-  meta: [
-    { name: 'description', content: 'JCSKI personal blog featuring technology, music, and creative content in J-WAVE style.' }
-  ]
+  
+  // 设置首页SEO
+  setHomeSEO()
+  
+  // 应用首页JSON-LD结构化数据
+  const homeJsonLD = generateHomePageJsonLD()
+  applyJsonLD(homeJsonLD)
+  
+  // v0.5.0 预加载关键资源 (步骤17)
+  autoPreloadCurrentPage()
+  setupInteractionPreload()
+  
+  // 预加载Hero背景图片和默认图片
+  preloadImage('/images/hero-bg.jpg')
+  preloadImage('/images/tech.jpg')
+  preloadImage('/images/music.jpg')
+  preloadImage('/images/news.jpg')
 })
 </script>
 

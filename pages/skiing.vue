@@ -155,11 +155,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'SKIING - JCSKI BLOG',
-  meta: [
-    { name: 'description', content: '滑雪运动与雪山体验，包括滑雪技巧、装备推荐、雪场攻略、安全知识等内容。' }
-  ]
+// SEO and JSON-LD setup
+const { setCategorySEO } = useSEO()
+const { generateCategoryJsonLD, applyJsonLD } = useJsonLD()
+
+onMounted(() => {
+  setCategorySEO('SKIING')
+  
+  // 应用SKIING分类页面JSON-LD结构化数据
+  const skiingJsonLD = generateCategoryJsonLD('SKIING')
+  applyJsonLD(skiingJsonLD)
 })
 </script>
 

@@ -1,0 +1,231 @@
+/* JCSKI Critical CSS - Above-the-fold styles */
+
+/* 关键 CSS 变量 */
+:root {
+  --jcski-black: #000;
+  --jcski-white: #fff;
+  --jcski-gray: #666;
+  --jcski-border: #e5e7eb;
+  --jcski-transition: all 0.3s ease;
+  --jcski-font-primary: 'Noto Sans SC', 'Noto Sans JP', 'Noto Sans', ui-sans-serif, system-ui, sans-serif;
+  --jcski-font-display: 'Special Gothic Expanded One', sans-serif;
+}
+
+/* 基础重置 */
+*,::before,::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  font-family: var(--jcski-font-primary);
+}
+
+body {
+  font-family: var(--jcski-font-primary);
+  color: var(--jcski-black);
+  background: var(--jcski-white);
+}
+
+/* 顶部导航 - 首屏可见 */
+.top-nav {
+  background: var(--jcski-white);
+  border-bottom: 1px solid var(--jcski-black);
+  padding: 20px 0;
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.top-logo {
+  font-family: var(--jcski-font-display);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--jcski-black);
+  text-decoration: none;
+}
+
+.top-nav-menu {
+  display: flex;
+  gap: 24px;
+}
+
+.top-nav-item {
+  color: var(--jcski-black);
+  text-decoration: none;
+  padding: 8px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--jcski-transition);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.nav-title {
+  font-family: var(--jcski-font-display);
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: var(--jcski-black);
+  margin-bottom: 2px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.nav-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--jcski-gray);
+  letter-spacing: 0.5px;
+  line-height: 1;
+  transition: color 0.4s ease;
+  position: relative;
+  z-index: 2;
+}
+
+/* Hero区域 - 首屏核心内容 */
+.main-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.hero-frame {
+  margin: 40px 0;
+}
+
+.hero-container {
+  display: flex;
+  gap: 80px;
+  min-height: 672px;
+  background: var(--jcski-white);
+}
+
+.hero-left {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 60px 40px 60px 20px;
+}
+
+.hero-main-title {
+  font-family: var(--jcski-font-display);
+  font-size: 56px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: var(--jcski-black);
+  margin: 0 0 12px;
+}
+
+.hero-subtitle {
+  color: var(--jcski-gray);
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin: 0 0 40px;
+}
+
+.hero-right {
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  justify-content: center;
+  padding: 36px 12px 36px 0;
+}
+
+.hero-image {
+  background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 100%);
+  border-radius: 8px;
+  height: 500px;
+  width: 700px;
+  margin: 30px 0 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 基础布局工具类 */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.relative { position: relative; }
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+/* 移动端响应式 - 关键断点 */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 0 15px;
+  }
+  
+  .top-nav {
+    padding: 16px 0;
+  }
+  
+  .top-nav-menu {
+    gap: 12px;
+  }
+  
+  .top-nav-item {
+    padding: 6px 12px;
+  }
+  
+  .nav-title {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+  
+  .nav-subtitle {
+    font-size: 9px;
+  }
+  
+  .hero-container {
+    flex-direction: column;
+    gap: 30px;
+    min-height: auto;
+  }
+  
+  .hero-left {
+    width: 100%;
+    padding: 30px 20px;
+  }
+  
+  .hero-right {
+    width: 100%;
+  }
+  
+  .hero-main-title {
+    font-size: 42px;
+    letter-spacing: 2px;
+  }
+  
+  .hero-image {
+    height: 360px;
+    width: 500px;
+    margin: 20px 0 0;
+  }
+}

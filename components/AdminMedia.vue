@@ -77,13 +77,15 @@
                 @change="toggleFileSelection(file)"
               >
             </div>
-            <img
+            <SmartImage
               v-if="file.type === 'image'"
               :src="file.path"
               :alt="file.originalName"
               class="preview-image"
+              :show-loading-placeholder="true"
+              :show-error-placeholder="true"
               @click="toggleFileSelection(file)"
-            >
+            />
             <div v-else class="audio-preview" @click="toggleFileSelection(file)">
               <div class="audio-icon">🎵</div>
               <audio controls class="audio-controls">
@@ -114,12 +116,14 @@
           <button @click="selectedMedia = null" class="close-btn">×</button>
         </div>
         <div class="modal-body">
-          <img
+          <SmartImage
             v-if="selectedMedia.type === 'image'"
             :src="selectedMedia.path"
             :alt="selectedMedia.originalName"
             class="modal-image"
-          >
+            :show-loading-placeholder="true"
+            :show-error-placeholder="true"
+          />
           <audio
             v-else
             controls
@@ -146,6 +150,9 @@
 </template>
 
 <script setup>
+import SmartImage from './SmartImage.vue'
+import { formatFileSize, isImageFile, isAudioFile } from '~/utils/media'
+
 const mediaFiles = ref([])
 const loading = ref(false)
 const uploading = ref(false)
@@ -307,13 +314,7 @@ const deleteMedia = async (id) => {
   }
 }
 
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
+// formatFileSize is now imported from utils/media
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('zh-CN')

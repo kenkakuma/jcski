@@ -1,0 +1,61 @@
+# JCSKI Blog Logrotate 配置文件
+# 用于AWS EC2生产环境的日志轮转管理
+# 位置: /etc/logrotate.d/jcski-blog
+
+# JCSKI Blog 应用日志
+/var/www/jcski-blog/logs/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+    create 644 ec2-user ec2-user
+    postrotate
+        # 重启应用程序以重新打开日志文件（如果需要）
+        # /usr/bin/systemctl reload nginx > /dev/null 2>&1 || true
+    endscript
+}
+
+# PM2 应用日志
+/home/ec2-user/.pm2/logs/*.log {
+    daily
+    missingok
+    rotate 5
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+    create 644 ec2-user ec2-user
+    postrotate
+        # PM2自动处理日志轮转，无需重启
+        /usr/bin/pm2 reloadLogs > /dev/null 2>&1 || true
+    endscript
+}
+
+# JCSKI Blog 自定义清理日志
+/var/log/jcski-log-cleanup.log {
+    weekly
+    missingok
+    rotate 4
+    compress
+    delaycompress
+    notifempty
+    copytruncate
+    create 644 root root
+}
+
+# Nginx 日志（如果默认配置不够）
+/var/log/nginx/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 644 nginx nginx
+    postrotate
+        /bin/kill -USR1 $(cat /var/run/nginx.pid 2>/dev/null) 2>/dev/null || true
+    endscript
+}

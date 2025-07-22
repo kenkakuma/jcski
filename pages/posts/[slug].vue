@@ -86,11 +86,12 @@
         <div class="article-content">
           <!-- Featured Image -->
           <div v-if="article.coverImage || article.featuredImage" class="featured-image">
-            <OptimizedImage 
+            <SmartImage 
               :src="article.coverImage || article.featuredImage" 
               :alt="article.title"
               height="400px"
-              :placeholder="true"
+              :show-loading-placeholder="true"
+              :show-error-placeholder="true"
             />
           </div>
           
@@ -160,12 +161,15 @@
               >
                 <a :href="`/posts/${related.slug}`">
                   <div class="related-image">
-                    <OptimizedImage 
-                      :src="related.featuredImage || getDefaultImage(related.category)" 
+                    <SmartImage 
+                      :src="related.featuredImage" 
+                      :fallback="getDefaultImage(related.category)"
                       :alt="related.title"
+                      :category="related.category"
                       class="related-img"
                       height="120px"
-                      :placeholder="true"
+                      :show-loading-placeholder="true"
+                      :show-error-placeholder="true"
                     />
                   </div>
                   <div class="related-content">
@@ -212,6 +216,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { BlogPost } from '~/types'
+import SmartImage from '~/components/SmartImage.vue'
+import { getDefaultImage } from '~/utils/media'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -297,19 +303,7 @@ const getCategoryClass = (category: string) => {
   return categoryMap[category] || 'category-default'
 }
 
-const getDefaultImage = (category: string) => {
-  const imageMap: { [key: string]: string } = {
-    'MUSIC': '/images/music.jpg',
-    'TECH': '/images/tech.jpg',
-    'SKIING': '/images/skiing.jpg',
-    'FISHING': '/images/fishing.jpg',
-    'BLOG': '/images/news.jpg',
-    'NEWS': '/images/news.jpg',
-    'GAMING': '/images/gaming.jpg',
-    'PODCAST': '/images/music.jpg'
-  }
-  return imageMap[category] || '/images/news.jpg'
-}
+// getDefaultImage is now imported from utils/media
 
 const shareToTwitter = () => {
   const url = encodeURIComponent(window.location.href)
@@ -331,36 +325,20 @@ const copyUrl = async () => {
   }
 }
 
-// SEO Meta
-useHead({
-  title: computed(() => article.value ? `${article.value.title} | JCSKI BLOG` : 'Loading... | JCSKI BLOG'),
-  meta: [
-    {
-      name: 'description',
-      content: computed(() => article.value?.excerpt || 'JCSKI Blog Article')
-    },
-    {
-      property: 'og:title',
-      content: computed(() => article.value?.title || 'JCSKI BLOG')
-    },
-    {
-      property: 'og:description', 
-      content: computed(() => article.value?.excerpt || 'JCSKI Blog Article')
-    },
-    {
-      property: 'og:image',
-      content: computed(() => article.value?.featuredImage || article.value?.coverImage || '/images/news.jpg')
-    },
-    {
-      property: 'og:type',
-      content: 'article'
-    },
-    {
-      name: 'keywords',
-      content: computed(() => article.value?.tags?.join(', ') || 'JCSKI, Blog')
-    }
-  ]
-})
+// SEO and JSON-LD setup
+const { setArticleSEO } = useSEO()
+const { generateArticleJsonLD, applyJsonLD } = useJsonLD()
+
+// Watch for article changes to update SEO and JSON-LD
+watch(article, (newArticle) => {
+  if (newArticle) {
+    setArticleSEO(newArticle)
+    
+    // 应用文章JSON-LD结构化数据
+    const articleJsonLD = generateArticleJsonLD(newArticle)
+    applyJsonLD(articleJsonLD)
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

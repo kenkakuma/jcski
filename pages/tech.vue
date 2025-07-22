@@ -154,11 +154,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'TECH - JCSKI BLOG',
-  meta: [
-    { name: 'description', content: '科技探索与开发分享，包括前端技术、AI应用、云计算、编程语言等内容。' }
-  ]
+// SEO and JSON-LD setup
+const { setCategorySEO } = useSEO()
+const { generateCategoryJsonLD, applyJsonLD } = useJsonLD()
+
+onMounted(() => {
+  setCategorySEO('TECH')
+  
+  // 应用TECH分类页面JSON-LD结构化数据
+  const techJsonLD = generateCategoryJsonLD('TECH')
+  applyJsonLD(techJsonLD)
 })
 </script>
 

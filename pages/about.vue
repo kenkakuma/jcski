@@ -230,11 +230,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'ABOUT - JCSKI BLOG',
-  meta: [
-    { name: 'description', content: '关于JCSKI - Web Developer & Multi-passionate Creator，分享技术、音乐、滑雪、钓鱼等多领域经验。' }
-  ]
+// SEO and JSON-LD setup
+const { setCategorySEO } = useSEO()
+const { generateCategoryJsonLD, applyJsonLD } = useJsonLD()
+
+onMounted(() => {
+  setCategorySEO('ABOUT')
+  
+  // 应用ABOUT页面JSON-LD结构化数据
+  const aboutJsonLD = generateCategoryJsonLD('ABOUT')
+  applyJsonLD(aboutJsonLD)
 })
 </script>
 

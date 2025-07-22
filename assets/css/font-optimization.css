@@ -1,0 +1,215 @@
+/* JCSKI Blog 字体和图标优化 CSS - v0.5.0
+ * 针对AWS EC2 t2.micro (1GB RAM)环境的字体性能优化
+ * 重点优化LCP、FCP和CLS指标
+ */
+
+/* 字体显示优化 */
+@font-face {
+  font-family: 'Special Gothic Expanded One';
+  font-display: swap; /* 确保字体交换显示，防止FOIT */
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* 系统字体栈优化 - 减少字体回退时间 */
+.font-primary {
+  font-family: 
+    "Special Gothic Expanded One",
+    /* 现代系统字体 */
+    ui-sans-serif,
+    system-ui,
+    /* 跨平台字体 */
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    /* 日文字体 */
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    Meiryo,
+    /* 中文字体 */
+    "Noto Sans SC", 
+    "Source Han Sans",
+    "Microsoft YaHei",
+    /* 通用回退 */
+    sans-serif;
+  font-display: swap;
+}
+
+/* 多语言字体优化 */
+.font-japanese {
+  font-family: 
+    "Noto Sans JP",
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    Meiryo,
+    sans-serif;
+  font-display: swap;
+}
+
+.font-chinese {
+  font-family: 
+    "Noto Sans SC",
+    "Source Han Sans",
+    "Microsoft YaHei",
+    "SimSun",
+    sans-serif;
+  font-display: swap;
+}
+
+/* Emoji图标优化 - 提升渲染性能 */
+.emoji-icon {
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  /* 使用系统emoji字体 */
+  font-family: 
+    "Apple Color Emoji",
+    "Segoe UI Emoji", 
+    "Noto Color Emoji",
+    "Android Emoji",
+    "EmojiSymbols",
+    "EmojiOne Mozilla",
+    "Twemoji Mozilla",
+    "Segoe UI Symbol",
+    sans-serif;
+  /* 防止布局偏移 */
+  font-size: inherit;
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+  /* GPU加速 */
+  will-change: transform;
+}
+
+/* 图标容器优化 - 减少CLS */
+.icon-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* 预定义尺寸防止布局偏移 */
+  min-width: 1em;
+  min-height: 1em;
+}
+
+/* 大尺寸图标优化 */
+.large-icon {
+  font-size: 2rem;
+  line-height: 1;
+  /* GPU硬件加速 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.xlarge-icon {
+  font-size: 4rem;
+  line-height: 1;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 文本渲染优化 */
+.optimized-text {
+  /* 现代文本渲染 */
+  text-rendering: optimizeSpeed;
+  /* webkit字体平滑 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 字体kerning */
+  font-kerning: auto;
+  /* 字体variant */
+  font-variant-ligatures: common-ligatures;
+}
+
+/* 关键内容文本优化 */
+.critical-text {
+  font-display: swap;
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 非关键内容延迟加载 */
+.non-critical-text {
+  font-display: optional; /* 100ms后不显示字体 */
+  text-rendering: optimizeSpeed;
+}
+
+/* 字体预加载样式占位符 - 减少CLS */
+.font-loading {
+  visibility: hidden;
+}
+
+.font-loaded {
+  visibility: visible;
+  /* 平滑过渡 */
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* 响应式字体优化 */
+@media (max-width: 768px) {
+  .font-primary {
+    /* 移动端使用系统字体以提升性能 */
+    font-family: 
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
+  
+  .large-icon,
+  .xlarge-icon {
+    /* 移动端减少GPU使用 */
+    transform: none;
+    backface-visibility: visible;
+  }
+}
+
+/* 打印样式优化 */
+@media print {
+  .emoji-icon {
+    /* 打印时使用文本替代 */
+    font-family: serif;
+  }
+  
+  .optimized-text,
+  .critical-text,
+  .non-critical-text {
+    /* 打印优化 */
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
+}
+
+/* 预连接和预加载提示 */
+.font-preload-hint {
+  /* 为关键字体添加预加载提示 */
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1;
+  font-family: "Special Gothic Expanded One", sans-serif;
+}
+
+/* 减少重绘的优化 */
+.will-change-text {
+  will-change: contents;
+}
+
+.no-will-change {
+  will-change: auto;
+}

@@ -122,13 +122,10 @@
 
           <div class="form-group">
             <label>正文 <span class="required">*</span></label>
-            <textarea
+            <RichTextEditor
               v-model="form.content"
-              class="form-textarea content-editor"
-              placeholder="请输入文章内容（支持Markdown）"
-              rows="15"
-              required
-            ></textarea>
+              placeholder="请输入文章内容（支持图片、第三方图片等）"
+            />
           </div>
 
           <div class="form-row">
@@ -220,6 +217,7 @@
 
 <script setup>
 import ImagePicker from './ImagePicker.vue'
+import RichTextEditor from './RichTextEditor.vue'
 const posts = ref([])
 const loading = ref(false)
 const showEditor = ref(false)
