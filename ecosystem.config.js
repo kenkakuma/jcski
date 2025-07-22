@@ -6,7 +6,8 @@ module.exports = {
   apps: [
     {
       name: 'jcski-blog',
-      script: './.nuxt/dist/server/server.mjs',
+      script: 'npm',
+      args: 'run preview',
       env_file: '.env.production',
       
       // 实例和集群配置 - 1GB内存限制优化
@@ -15,8 +16,7 @@ module.exports = {
       
       // Node.js内存优化参数
       node_args: [
-        '--max-old-space-size=512',   // 限制老生代堆内存为512MB
-        '--optimize-for-size'         // 优化内存使用而非速度
+        '--max-old-space-size=512'    // 限制老生代堆内存为512MB
       ],
       
       // PM2内存和性能限制
