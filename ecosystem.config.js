@@ -6,7 +6,7 @@ module.exports = {
   apps: [
     {
       name: 'jcski-blog',
-      script: './.output/server/index.mjs',
+      script: './.output/server/server.mjs',
       env_file: '.env.production',
       
       // 实例和集群配置 - 1GB内存限制优化
@@ -16,10 +16,7 @@ module.exports = {
       // Node.js内存优化参数
       node_args: [
         '--max-old-space-size=512',   // 限制老生代堆内存为512MB
-        '--max-new-space-size=64',    // 限制新生代堆内存为64MB  
-        '--optimize-for-size',        // 优化内存使用而非速度
-        '--gc-interval=100',          // 垃圾回收间隔优化
-        '--initial-old-space-size=256' // 初始老生代堆大小256MB
+        '--optimize-for-size'         // 优化内存使用而非速度
       ],
       
       // PM2内存和性能限制
@@ -38,8 +35,7 @@ module.exports = {
         ADMIN_EMAIL: 'admin@jcski.com',
         ADMIN_PASSWORD: 'admin123456',
         
-        // Node.js内存和GC优化环境变量
-        NODE_OPTIONS: '--max-old-space-size=512 --optimize-for-size',
+        // Node.js内存和GC优化环境变量 (与node_args重复，移除避免冲突)
         UV_THREADPOOL_SIZE: 4,        // 线程池大小限制
         NODE_NO_WARNINGS: 1           // 禁用警告输出节省内存
       },
