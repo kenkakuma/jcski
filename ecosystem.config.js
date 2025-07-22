@@ -6,7 +6,7 @@ module.exports = {
   apps: [
     {
       name: 'jcski-blog',
-      script: './.output/server/server.mjs',
+      script: './.nuxt/dist/server/server.mjs',
       env_file: '.env.production',
       
       // 实例和集群配置 - 1GB内存限制优化
