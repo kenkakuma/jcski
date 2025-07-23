@@ -218,6 +218,7 @@ import { ref } from 'vue'
 import type { BlogPost } from '~/types'
 import SmartImage from '~/components/SmartImage.vue'
 import { getDefaultImage } from '~/utils/media'
+import { parseMarkdownAdvanced, isMarkdownContent } from '~/utils/markdown'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -274,9 +275,15 @@ onMounted(() => {
 const formattedContent = computed(() => {
   if (!article.value?.content) return ''
   
-  // Simple HTML formatting for now
-  // In the future, this could support Markdown rendering
-  return article.value.content.replace(/\n/g, '<br>')
+  // 检测是否为Markdown格式内容
+  if (isMarkdownContent(article.value.content)) {
+    // 使用Markdown解析器
+    const { html } = parseMarkdownAdvanced(article.value.content)
+    return html
+  } else {
+    // 普通HTML内容处理
+    return article.value.content.replace(/\n/g, '<br>')
+  }
 })
 
 // Helper functions

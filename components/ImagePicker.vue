@@ -89,8 +89,8 @@
           <!-- Library Tab Content -->
           <div v-if="activeTab === 'library'" class="tab-content">
             <AdminMedia 
-              :select-mode="true"
-              :allow-multiple="false"
+              :selectMode="true"
+              :allowMultiple="false"
               @select="handleImageSelect"
               @cancel="showPicker = false"
             />

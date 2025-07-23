@@ -151,6 +151,13 @@ const onLoad = (event) => {
 }
 
 const onError = (event) => {
+  console.warn('SmartImage: Image load failed', {
+    src: currentSrc.value,
+    originalSrc: props.src,
+    fallback: props.fallback,
+    isExternal: isExternal.value
+  })
+  
   isLoading.value = false
   hasError.value = true
   
@@ -158,6 +165,7 @@ const onError = (event) => {
   if (currentSrc.value === resolveImagePath(props.src) && props.fallback) {
     const fallbackSrc = resolveImagePath(props.fallback)
     if (fallbackSrc && fallbackSrc !== currentSrc.value) {
+      console.log('SmartImage: Trying fallback:', fallbackSrc)
       currentSrc.value = fallbackSrc
       hasError.value = false
       isLoading.value = true
@@ -168,6 +176,7 @@ const onError = (event) => {
   // 如果fallback也失败，使用默认图片
   const defaultSrc = getDefaultImage(props.category)
   if (currentSrc.value !== defaultSrc) {
+    console.log('SmartImage: Using default image:', defaultSrc)
     currentSrc.value = defaultSrc
     hasError.value = false
     isLoading.value = true
@@ -176,7 +185,7 @@ const onError = (event) => {
   
   // 设置错误消息
   if (isExternal.value) {
-    errorMessage.value = '第三方图片加载失败'
+    errorMessage.value = '第三方图片加载失败，请检查URL是否有效'
   } else {
     errorMessage.value = '图片加载失败'
   }

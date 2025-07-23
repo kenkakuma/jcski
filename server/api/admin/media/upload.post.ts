@@ -30,20 +30,24 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const form = formidable({
-      uploadDir: path.join(process.cwd(), 'public/uploads'),
-      keepExtensions: true,
-      maxFileSize: 10 * 1024 * 1024, // 10MB
-      multiples: true
-    })
-
-    // Ensure upload directory exists
+    // Ensure upload directory exists first
     const uploadDir = path.join(process.cwd(), 'public/uploads')
     try {
       await fs.access(uploadDir)
     } catch {
       await fs.mkdir(uploadDir, { recursive: true })
     }
+
+    const form = formidable({
+      uploadDir: uploadDir,
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024, // 10MB
+      multiples: true,
+      filter: ({ mimetype }) => {
+        // Only allow images and audio files
+        return mimetype && (mimetype.startsWith('image/') || mimetype.startsWith('audio/'))
+      }
+    })
 
     const [fields, files] = await form.parse(event.node.req)
     

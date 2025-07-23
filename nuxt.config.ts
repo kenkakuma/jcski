@@ -6,7 +6,8 @@ export default defineNuxtConfig({
   ],
   css: [
     '~/assets/css/critical.css',
-    '~/assets/css/main.css'
+    '~/assets/css/main.css',
+    '~/assets/css/markdown.css'
   ],
   googleFonts: {
     families: {

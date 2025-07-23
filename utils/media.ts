@@ -32,7 +32,7 @@ export const resolveImagePath = (path: string | null | undefined): string | null
     return path
   }
 
-  // 如果是相对路径且以/uploads/开头，在开发环境直接返回
+  // 如果是相对路径且以/uploads/开头，直接返回
   if (path.startsWith('/uploads/')) {
     return path
   }
@@ -40,6 +40,21 @@ export const resolveImagePath = (path: string | null | undefined): string | null
   // 处理不规范的路径格式
   if (path.startsWith('uploads/')) {
     return '/' + path
+  }
+
+  // 处理以 /public/uploads/ 开头的绝对路径
+  if (path.startsWith('/public/uploads/')) {
+    return path.replace('/public', '')
+  }
+
+  // 处理以 public/uploads/ 开头的路径
+  if (path.startsWith('public/uploads/')) {
+    return '/' + path.replace('public/', '')
+  }
+
+  // 如果是相对文件名，假设在 uploads 目录下
+  if (!path.includes('/') && (path.includes('.jpg') || path.includes('.png') || path.includes('.gif') || path.includes('.webp') || path.includes('.svg'))) {
+    return '/uploads/' + path
   }
 
   // 其他情况返回null
@@ -103,26 +118,60 @@ export const createImageProps = (
 export const processExternalImageUrl = (url: string): ExternalImageOptions => {
   // 基础验证
   if (!validateImageUrl(url)) {
-    throw new Error('Invalid image URL')
+    throw new Error('无效的图片URL，请检查URL格式是否正确')
   }
 
   // 常见图片托管服务优化处理
-  let processedUrl = url
+  let processedUrl = url.trim()
 
-  // GitHub用户内容优化
-  if (url.includes('github.com') || url.includes('githubusercontent.com')) {
-    processedUrl = url.replace('github.com', 'raw.githubusercontent.com')
-      .replace('/blob/', '/')
-  }
+  try {
+    // GitHub用户内容优化
+    if (processedUrl.includes('github.com') && !processedUrl.includes('raw.githubusercontent.com')) {
+      processedUrl = processedUrl.replace('github.com', 'raw.githubusercontent.com')
+        .replace('/blob/', '/')
+    }
 
-  // 添加图片格式检查
-  const hasImageExtension = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(processedUrl)
-  
-  return {
-    url: processedUrl,
-    fallback: getDefaultImage('NEWS'),
-    lazy: true,
-    alt: hasImageExtension ? 'External image' : 'External content'
+    // Imgur优化处理
+    if (processedUrl.includes('imgur.com') && !processedUrl.includes('i.imgur.com')) {
+      const imgurMatch = processedUrl.match(/imgur\.com\/(.+)/)
+      if (imgurMatch) {
+        processedUrl = `https://i.imgur.com/${imgurMatch[1]}.jpg`
+      }
+    }
+
+    // 移除URL中的查询参数（某些情况下会干扰显示）
+    const urlObj = new URL(processedUrl)
+    // 保留必要的查询参数，移除追踪参数
+    const allowedParams = ['w', 'h', 'width', 'height', 'quality', 'format']
+    const newSearchParams = new URLSearchParams()
+    
+    urlObj.searchParams.forEach((value, key) => {
+      if (allowedParams.includes(key.toLowerCase())) {
+        newSearchParams.append(key, value)
+      }
+    })
+    
+    urlObj.search = newSearchParams.toString()
+    processedUrl = urlObj.toString()
+
+    // 添加图片格式检查
+    const hasImageExtension = /\.(jpg|jpeg|png|gif|webp|svg|bmp|tiff)$/i.test(processedUrl)
+    
+    return {
+      url: processedUrl,
+      fallback: getDefaultImage('NEWS'),
+      lazy: true,
+      alt: hasImageExtension ? 'External image' : 'External content'
+    }
+  } catch (error) {
+    // 如果URL处理失败，返回原始URL
+    console.warn('URL processing failed, using original URL:', error)
+    return {
+      url: url,
+      fallback: getDefaultImage('NEWS'),
+      lazy: true,
+      alt: 'External image'
+    }
   }
 }
 
