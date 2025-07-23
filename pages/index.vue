@@ -107,7 +107,7 @@
               <a :href="`/posts/${post.slug}`" class="news-card-link">
                 <div class="program-image">
                   <SmartImage 
-                    :src="post.featuredImage" 
+                    :src="post.featuredImage || post.coverImage" 
                     :fallback="getDefaultImage(post.category)"
                     :alt="post.title" 
                     :category="post.category"
