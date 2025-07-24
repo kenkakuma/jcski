@@ -167,7 +167,7 @@
                       :alt="related.title"
                       :category="related.category"
                       class="related-img"
-                      height="120px"
+                      height="80px"
                       :show-loading-placeholder="true"
                       :show-error-placeholder="true"
                     />
@@ -798,6 +798,14 @@ watch(article, (newArticle) => {
   color: white;
   font-size: 12px;
   font-weight: bold;
+  overflow: hidden;
+  border-radius: 4px 4px 0 0;
+}
+
+.related-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .related-item h4 {
