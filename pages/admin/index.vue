@@ -63,7 +63,7 @@
 
         <!-- Posts Management -->
         <div v-if="activeTab === 'posts'" class="posts-management">
-          <AdminPosts />
+          <AdvancedPostManager />
         </div>
 
         <!-- Hero Management -->
@@ -91,6 +91,8 @@
 </template>
 
 <script setup>
+import AdvancedPostManager from '~/components/AdvancedPostManager.vue'
+
 definePageMeta({
   layout: false
 })

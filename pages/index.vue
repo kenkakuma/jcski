@@ -6,8 +6,8 @@
         <h1 class="top-logo">JCSKI BLOG</h1>
         <div class="top-nav-menu">
           <a href="/music" class="top-nav-item">
-            <span class="nav-title">MUSIC</span>
-            <span class="nav-subtitle">音楽</span>
+            <span class="nav-title">GAMING</span>
+            <span class="nav-subtitle">游戏</span>
           </a>
           <a href="/skiing" class="top-nav-item">
             <span class="nav-title">SKIING</span>
@@ -43,7 +43,7 @@
                 
                 <nav class="hero-menu">
                   <a href="/music" class="hero-menu-item" :class="{ active: activeHero?.type === 'music' }" @mouseenter="handleMenuHover('music')" @mouseleave="handleMenuLeave">
-                    <span class="menu-title">MUSIC<span class="menu-subtitle-inline">音楽</span></span>
+                    <span class="menu-title">GAMING<span class="menu-subtitle-inline">游戏</span></span>
                   </a>
                   <a href="/skiing" class="hero-menu-item" :class="{ active: activeHero?.type === 'skiing' }" @mouseenter="handleMenuHover('skiing')" @mouseleave="handleMenuLeave">
                     <span class="menu-title">SKIING<span class="menu-subtitle-inline">スキー</span></span>
