@@ -251,10 +251,9 @@
             
             <div class="cover-image">
               <label class="field-label">封面图片</label>
-              <AdvancedImagePicker
+              <ImagePicker
                 v-model="form.coverImage"
                 placeholder="选择封面图片"
-                type="cover"
               />
             </div>
 
@@ -263,10 +262,9 @@
                 特色图片
                 <span class="hint">首页展示用</span>
               </label>
-              <AdvancedImagePicker
+              <ImagePicker
                 v-model="form.featuredImage"
                 placeholder="选择特色图片"
-                type="featured"
               />
             </div>
 
@@ -370,7 +368,7 @@
 import { ref, reactive, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { debounce } from 'lodash-es'
 import AdvancedRichTextEditor from './AdvancedRichTextEditor.vue'
-import AdvancedImagePicker from './AdvancedImagePicker.vue'
+import ImagePicker from './ImagePicker.vue'
 
 // Props
 const props = defineProps({

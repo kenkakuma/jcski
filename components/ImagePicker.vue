@@ -73,7 +73,7 @@
                 <div class="upload-content">
                   <div class="upload-icon">📁</div>
                   <p>点击选择图片或拖拽到这里</p>
-                  <p class="upload-hint">支持 JPG, PNG, GIF 格式，最大 10MB</p>
+                  <p class="upload-hint">支持 JPG, PNG, GIF, WebP, BMP, TIFF, HEIC 等格式，自动压缩至800x600</p>
                 </div>
               </div>
               
@@ -197,8 +197,14 @@ const handleImageUpload = (event) => {
 }
 
 const uploadImage = async (file) => {
-  if (file.size > 10 * 1024 * 1024) {
-    alert('文件大小不能超过10MB')
+  // 移除文件大小限制，由服务器端压缩处理
+  const validTypes = [
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+    'image/bmp', 'image/tiff', 'image/svg+xml', 'image/heic', 'image/heif'
+  ]
+  
+  if (!validTypes.includes(file.type)) {
+    alert('不支持的图片格式，请选择 JPG、PNG、GIF、WebP、BMP、TIFF、HEIC 等格式的图片')
     return
   }
 
