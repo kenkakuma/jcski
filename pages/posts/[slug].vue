@@ -281,8 +281,20 @@ const formattedContent = computed(() => {
     const { html } = parseMarkdownAdvanced(article.value.content)
     return html
   } else {
-    // 普通HTML内容处理
-    return article.value.content.replace(/\n/g, '<br>')
+    // HTML内容处理：规范化富文本编辑器产生的HTML
+    let content = article.value.content
+    
+    // 处理空的div标签和多余的换行
+    content = content
+      .replace(/<div><br><\/div>/g, '<br>')
+      .replace(/<div><\/div>/g, '<br>')
+      .replace(/<div>/g, '<p>')
+      .replace(/<\/div>/g, '</p>')
+      .replace(/(<br\s*\/?>){3,}/g, '<br><br>')  // 限制连续换行
+      .replace(/^<p><\/p>/gm, '')  // 移除空段落
+      .replace(/\n/g, ' ')  // 将换行符转换为空格，避免不必要的换行
+    
+    return content
   }
 })
 
@@ -615,6 +627,36 @@ watch(article, (newArticle) => {
   font-size: 16px;
   line-height: 1.8;
   color: #333;
+}
+
+/* 确保HTML内容中的段落和标题正确显示 */
+.article-body p {
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.article-body p:empty {
+  display: none;
+}
+
+/* 处理富文本编辑器产生的内联样式 */
+.article-body strong {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.article-body em {
+  font-style: italic;
+}
+
+/* 确保代码显示正确 */
+.article-body code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #e74c3c;
 }
 
 .article-body h2 {

@@ -62,6 +62,15 @@ export function parseMarkdown(content: string): string {
 export function isMarkdownContent(content: string): boolean {
   if (!content) return false
   
+  // 如果内容包含大量HTML标签（特别是div标签），则认为是HTML内容
+  const htmlTagCount = (content.match(/<div|<span|<p>/g) || []).length
+  const totalLines = content.split('\n').length
+  
+  // 如果HTML标签数量占总行数的40%以上，则认为是HTML格式
+  if (htmlTagCount > totalLines * 0.4) {
+    return false
+  }
+  
   const markdownPatterns = [
     /^#{1,6}\s/m,           // 标题
     /\*\*.*?\*\*/,          // 粗体
@@ -76,7 +85,9 @@ export function isMarkdownContent(content: string): boolean {
     /^---$/m                // 分隔线
   ]
   
-  return markdownPatterns.some(pattern => pattern.test(content))
+  // 需要至少匹配3个Markdown模式才认为是纯Markdown
+  const matchCount = markdownPatterns.filter(pattern => pattern.test(content)).length
+  return matchCount >= 3
 }
 
 // 提取Markdown中的标题用于生成目录
