@@ -205,6 +205,7 @@
 </template>
 
 <script setup>
+import { ref, computed, inject, onMounted, onUnmounted } from 'vue'
 import AdvancedPostManager from '~/components/AdvancedPostManager.vue'
 import AdminHero from '~/components/AdminHero.vue'
 import AdminMedia from '~/components/AdminMedia.vue'
@@ -215,24 +216,13 @@ definePageMeta({
   layout: 'admin'
 })
 
-// 移除i18n相关代码，项目暂不使用国际化
-
 // 管理tab状态 - 直接使用布局传递的状态
 const currentTab = inject('currentTab', ref('dashboard'))
 const activeTab = computed(() => currentTab.value)
 
-// 监听布局tab变化信号
+// 监听布局tab变化
 onMounted(() => {
-  const handleTabEvent = (event) => {
-    console.log('Page received tab change event:', event.detail.tab)
-    // 这里可以添加页面特定的处理逻辑
-  }
-  
-  document.querySelector('.admin-content')?.addEventListener('tabChanged', handleTabEvent)
-  
-  onUnmounted(() => {
-    document.querySelector('.admin-content')?.removeEventListener('tabChanged', handleTabEvent)
-  })
+  console.log('Admin page mounted, current tab:', activeTab.value)
 })
 
 // 仪表板数据状态

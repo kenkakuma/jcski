@@ -91,6 +91,8 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
 defineProps({
   activeTab: {
     type: String,
@@ -104,9 +106,19 @@ const emit = defineEmits(['tab-change'])
 const isCollapsed = ref(false)
 
 // 导航点击处理
-const handleNavClick = (tabId) => {
+const handleNavClick = async (tabId) => {
   console.log('Sidebar nav clicked:', tabId)
   emit('tab-change', tabId)
+  
+  // 强制DOM事件以确保响应
+  await new Promise(resolve => setTimeout(resolve, 0))
+  
+  // 可选: 添加自定义DOM事件作为备用
+  const event = new CustomEvent('admin-tab-change', { 
+    detail: { tab: tabId },
+    bubbles: true 
+  })
+  document.dispatchEvent(event)
 }
 
 // 折叠切换功能

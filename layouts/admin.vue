@@ -130,6 +130,8 @@
 </template>
 
 <script setup>
+import { nextTick, ref, computed, provide, inject, onMounted, onUnmounted } from 'vue'
+
 // 页面元数据
 useHead({
   title: 'JCSKI Admin - 管理后台',
@@ -200,24 +202,15 @@ provide('setCurrentTab', (tab) => {
 })
 
 // 方法
-const handleTabChange = (tab) => {
+const handleTabChange = async (tab) => {
   console.log('Layout handleTabChange called:', tab) // 调试日志
   currentTab.value = tab
   showNotifications.value = false
   showUserMenu.value = false
   
-  // 等待DOM更新后通知页面组件
-  nextTick(() => {
-    // 触发事件让页面组件知道tab变化
-    const pageComponent = document.querySelector('.admin-content')
-    if (pageComponent) {
-      const event = new CustomEvent('tabChanged', {
-        detail: { tab },
-        bubbles: true
-      })
-      pageComponent.dispatchEvent(event)
-    }
-  })
+  // 确保DOM和状态同步
+  await nextTick()
+  console.log('Tab changed to:', currentTab.value)
 }
 
 const markAsRead = (notificationId) => {

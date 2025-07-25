@@ -187,7 +187,7 @@ export default defineEventHandler(async (event) => {
         title: activity.title,
         type: activity.createdAt.getTime() === activity.updatedAt.getTime() ? 'created' : 'updated',
         timestamp: activity.updatedAt,
-        author: activity.author?.username || activity.author?.name || 'Unknown',
+        author: activity.author?.username || 'Unknown',
         category: activity.category,
         published: activity.published
       })),
