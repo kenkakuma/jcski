@@ -246,7 +246,7 @@ const loadPosts = async () => {
   try {
     const query = new URLSearchParams({
       page: currentPage.value,
-      published: filter.value === 'all' ? 'all' : filter.value === 'published'
+      published: filter.value === 'all' ? 'all' : (filter.value === 'published' ? 'true' : 'false')
     })
 
     if (process.dev) {

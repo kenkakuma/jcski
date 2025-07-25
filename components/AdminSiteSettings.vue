@@ -1,11 +1,44 @@
 <template>
   <div class="admin-settings">
-    <h2>网站设置</h2>
+    <div class="settings-header">
+      <h2 class="settings-title">
+        ⚙️ 系统设置中心
+        <span class="title-badge">v3.0</span>
+      </h2>
+      <div class="settings-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ Object.keys(settings).length }}</span>
+          <span class="stat-label">配置项</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ socialLinks.length }}</span>
+          <span class="stat-label">社交链接</span>
+        </div>
+      </div>
+    </div>
 
     <div class="settings-form">
+      <!-- 快速操作面板 -->
+      <div class="quick-actions">
+        <button @click="resetToDefaults" class="action-btn reset" :disabled="saving">
+          🔄 恢复默认
+        </button>
+        <button @click="exportSettings" class="action-btn export">
+          📤 导出配置
+        </button>
+        <button @click="importSettings" class="action-btn import">
+          📥 导入配置
+        </button>
+        <input ref="fileInput" type="file" accept=".json" @change="handleImport" style="display: none">
+      </div>
       <!-- Basic Settings -->
       <div class="settings-section">
-        <h3>基本设置</h3>
+        <div class="section-header">
+          <h3 class="section-title">
+            🏠 基本设置
+          </h3>
+          <p class="section-desc">配置网站的基本信息和元数据</p>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label>网站名称</label>
@@ -31,7 +64,12 @@
 
       <!-- Hero Section Settings -->
       <div class="settings-section">
-        <h3>首页横幅设置</h3>
+        <div class="section-header">
+          <h3 class="section-title">
+            🎆 首页横幅设置
+          </h3>
+          <p class="section-desc">自定义Hero区域的展示内容和视觉效果</p>
+        </div>
         <div class="form-grid">
           <div class="form-group">
             <label>主标题</label>
@@ -83,7 +121,12 @@
 
       <!-- Audio Settings -->
       <div class="settings-section">
-        <h3>背景音乐设置</h3>
+        <div class="section-header">
+          <h3 class="section-title">
+            🎵 背景音乐设置
+          </h3>
+          <p class="section-desc">设置网站的背景音乐和音频体验</p>
+        </div>
         <div class="form-group">
           <label>背景音乐文件</label>
           <div class="audio-upload">
@@ -106,7 +149,12 @@
 
       <!-- Social Links -->
       <div class="settings-section">
-        <h3>社交网络链接</h3>
+        <div class="section-header">
+          <h3 class="section-title">
+            🔗 社交网络链接
+          </h3>
+          <p class="section-desc">管理社交媒体和外部链接</p>
+        </div>
         <div class="social-links-editor">
           <div v-for="(link, index) in socialLinks" :key="index" class="social-link-item">
             <div class="link-fields">
@@ -137,9 +185,19 @@
 
       <!-- Save Button -->
       <div class="settings-actions">
-        <button @click="saveSettings" class="btn-primary" :disabled="saving">
-          {{ saving ? '保存中...' : '保存设置' }}
-        </button>
+        <div class="save-info">
+          <p class="save-hint">设置修改后需要点击保存才能生效</p>
+          <p class="last-saved" v-if="lastSaved">上次保存: {{ formatTime(lastSaved) }}</p>
+        </div>
+        <div class="action-buttons">
+          <button @click="previewChanges" class="btn-secondary" :disabled="saving">
+            👁️ 预览效果
+          </button>
+          <button @click="saveSettings" class="btn-primary" :disabled="saving">
+            <span v-if="saving" class="loading-spinner"></span>
+            {{ saving ? '保存中...' : '✨ 保存设置' }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -159,6 +217,72 @@ const settings = reactive({
 
 const socialLinks = ref([])
 const saving = ref(false)
+const lastSaved = ref(null)
+const fileInput = ref(null)
+
+const resetToDefaults = async () => {
+  if (confirm('确定要恢复默认设置吗？这将清除所有自定义配置。')) {
+    Object.assign(settings, {
+      siteName: 'JCSKI',
+      siteDescription: 'Personal Blog',
+      heroTitle: 'JCSKI',
+      heroSubtitle: 'INSPIRE JCSKI いろいろな発見',
+      heroDescription: '様々なジャンルを超えた音楽や情報をお届けし、日常生活に新しいインスピレーションをもたらします。',
+      heroImage: '',
+      backgroundMusic: '',
+      socialLinks: '[]'
+    })
+    socialLinks.value = []
+    alert('设置已恢复为默认值')
+  }
+}
+
+const exportSettings = () => {
+  const exportData = {
+    ...settings,
+    socialLinks: socialLinks.value,
+    exportDate: new Date().toISOString()
+  }
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `jcski-settings-${new Date().toISOString().split('T')[0]}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+const importSettings = () => {
+  fileInput.value?.click()
+}
+
+const handleImport = async (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    try {
+      const text = await file.text()
+      const importData = JSON.parse(text)
+      if (importData.siteName && importData.heroTitle) {
+        Object.assign(settings, importData)
+        socialLinks.value = importData.socialLinks || []
+        alert('设置导入成功！')
+      } else {
+        alert('导入文件格式不正确')
+      }
+    } catch (error) {
+      alert('导入失败，请检查文件格式')
+    }
+  }
+}
+
+const previewChanges = () => {
+  window.open('/', '_blank')
+}
+
+const formatTime = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleString('zh-CN')
+}
 
 const loadSettings = async () => {
   try {
@@ -182,6 +306,7 @@ const saveSettings = async () => {
       body: settings
     })
     
+    lastSaved.value = new Date()
     alert('设置保存成功！')
   } catch (error) {
     console.error('Failed to save settings:', error)
@@ -205,6 +330,8 @@ const removeSocialLink = (index) => {
 
 onMounted(() => {
   loadSettings()
+  // 模拟上次保存时间
+  lastSaved.value = new Date(Date.now() - 1000 * 60 * 30) // 30分钟前
 })
 </script>
 

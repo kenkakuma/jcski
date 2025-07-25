@@ -4,7 +4,9 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const page = parseInt(query.page as string) || 1
   const limit = parseInt(query.limit as string) || 10
-  const published = query.published === 'all' ? undefined : query.published === 'true'
+  const published = query.published === 'all' ? undefined : 
+                   query.published === 'true' ? true : 
+                   query.published === 'false' ? false : undefined
 
   try {
     const where = published !== undefined ? { published } : {}
