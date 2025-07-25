@@ -431,7 +431,7 @@ const loadPosts = async () => {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     
-    posts.value = data.posts
+    posts.value = data.data.posts
     updateStats()
   } catch (error) {
     console.error('Failed to load posts:', error)
