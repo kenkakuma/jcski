@@ -2,7 +2,7 @@
   <NuxtLayout name="admin">
     <!-- Debug Info -->
     <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
-      <strong>🔍 Debug Info:</strong> Current Tab = "{{ activeTab }}" | Injected Tab = "{{ currentTab }}"<br>
+      <strong>🔍 Debug Info:</strong> Current Tab = "{{ activeTab }}" | Injected Tab = "{{ currentTab }}" | Raw Value = "{{ currentTab.value }}"<br>
       <strong>📊 Visible Sections:</strong> 
       Dashboard: {{ activeTab === 'dashboard' }}, 
       Posts: {{ activeTab === 'posts' }}, 
@@ -10,7 +10,9 @@
       Media: {{ activeTab === 'media' }}, 
       Settings: {{ activeTab === 'settings' }}, 
       Calendar: {{ activeTab === 'calendar' }}, 
-      Analytics: {{ activeTab === 'analytics' }}
+      Analytics: {{ activeTab === 'analytics' }}<br>
+      <strong>🎯 Active Component Check:</strong> {{ activeTab }}<br>
+      <button @click="testTabChange" style="margin-top: 5px; padding: 5px;">Test Tab Change to Posts</button>
     </div>
     
     <div class="dashboard-overview-wrapper">
@@ -295,6 +297,14 @@ const fetchDashboardStats = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 测试函数
+const testTabChange = () => {
+  console.log('🧪 Test tab change clicked')
+  console.log('🧪 Before change - currentTab:', currentTab.value, 'activeTab:', activeTab.value)
+  currentTab.value = 'posts'
+  console.log('🧪 After change - currentTab:', currentTab.value, 'activeTab:', activeTab.value)
 }
 
 // 组件挂载时获取数据
