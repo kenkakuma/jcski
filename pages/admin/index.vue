@@ -228,7 +228,8 @@ import AdminSiteSettings from '~/components/AdminSiteSettings.vue'
 import AdminCalendar from '~/components/AdminCalendar.vue'
 
 definePageMeta({
-  layout: 'admin'
+  layout: 'admin',
+  middleware: 'admin-auth'
 })
 
 // 管理tab状态 - 直接使用布局传递的状态  
