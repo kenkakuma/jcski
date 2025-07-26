@@ -204,14 +204,16 @@ provide('setCurrentTab', (tab) => {
 
 // 方法
 const handleTabChange = async (tab) => {
-  console.log('Layout handleTabChange called:', tab) // 调试日志
+  console.log('🚨 Layout handleTabChange called:', tab) // 调试日志
+  console.log('🚨 Before change - currentTab:', currentTab.value)
   currentTab.value = tab
   showNotifications.value = false
   showUserMenu.value = false
   
   // 确保DOM和状态同步
   await nextTick()
-  console.log('Tab changed to:', currentTab.value)
+  console.log('🚨 After change - currentTab:', currentTab.value)
+  console.log('🚨 Tab change completed for:', tab)
 }
 
 const markAsRead = (notificationId) => {

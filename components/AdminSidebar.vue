@@ -93,7 +93,7 @@
 <script setup>
 import { ref, inject, nextTick, onMounted, onUnmounted } from 'vue'
 
-defineProps({
+const props = defineProps({
   activeTab: {
     type: String,
     required: true
@@ -108,8 +108,10 @@ const isCollapsed = ref(false)
 // 导航点击处理
 const handleNavClick = async (tabId) => {
   console.log('🔄 Sidebar nav clicked:', tabId)
+  console.log('🔄 Current activeTab prop:', props.activeTab)
   
   // 主要方式：通过 emit 发送事件
+  console.log('📤 Emitting tab-change event:', tabId)
   emit('tab-change', tabId)
   
   // 备用方式1：直接访问父组件的方法 (通过inject)
@@ -117,6 +119,8 @@ const handleNavClick = async (tabId) => {
   if (setCurrentTab) {
     console.log('📝 Direct tab update via inject:', tabId)
     setCurrentTab(tabId)
+  } else {
+    console.log('❌ setCurrentTab not found via inject')
   }
   
   // 备用方式2：DOM自定义事件
