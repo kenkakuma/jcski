@@ -147,7 +147,7 @@ export default defineEventHandler(async (event) => {
           metadata: {
             heroId: hero.id,
             type: hero.type,
-            isActive: hero.active,
+            active: hero.active,
             status: hero.active ? 'active' : 'inactive'
           },
           url: `/admin#hero`,
