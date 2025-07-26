@@ -135,7 +135,7 @@ export default defineEventHandler(async (event) => {
         category: true,
         author: {
           select: {
-            userusername: true
+            username: true
           }
         }
       },
