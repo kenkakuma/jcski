@@ -195,9 +195,10 @@ const currentPageIcon = computed(() => {
   return icons[currentTab.value] || '📄'
 })
 
-// Provide current tab to child components
+// Provide current tab to child components  
 provide('currentTab', currentTab)
 provide('setCurrentTab', (tab) => {
+  console.log('🔄 setCurrentTab called:', tab)
   currentTab.value = tab
 })
 
@@ -257,7 +258,7 @@ const handleLogout = async () => {
   }
 }
 
-// 点击外部关闭下拉菜单
+// 点击外部关闭下拉菜单 + 监听自定义tab变更事件
 onMounted(() => {
   const handleClickOutside = (event) => {
     if (!event.target.closest('.notification-center')) {
@@ -268,10 +269,18 @@ onMounted(() => {
     }
   }
   
+  // 监听自定义DOM事件作为备用机制
+  const handleCustomTabChange = (event) => {
+    console.log('📧 Custom DOM event received:', event.detail.tab)
+    handleTabChange(event.detail.tab)
+  }
+  
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('admin-tab-change', handleCustomTabChange)
   
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
+    document.removeEventListener('admin-tab-change', handleCustomTabChange)
   })
 })
 </script>

@@ -35,7 +35,8 @@ export default defineEventHandler(async (event) => {
           category: true,
           author: {
             select: {
-              username: true,
+              id: true,
+              name: true,
               email: true
             }
           }
@@ -54,7 +55,7 @@ export default defineEventHandler(async (event) => {
           title: post.title,
           description: `文章 "${post.title}" 已${isNew ? '创建' : '更新'}`,
           timestamp: post.updatedAt,
-          author: post.author.name,
+          author: post.author?.name || post.author?.email || '未知用户',
           metadata: {
             postId: post.id,
             slug: post.slug,

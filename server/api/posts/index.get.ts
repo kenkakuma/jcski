@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
             author: {
               select: {
                 id: true,
-                username: true,
+                name: true,
                 email: true
               }
             }

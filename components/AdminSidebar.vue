@@ -91,7 +91,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, inject, nextTick, onMounted, onUnmounted } from 'vue'
 
 defineProps({
   activeTab: {
@@ -107,18 +107,27 @@ const isCollapsed = ref(false)
 
 // 导航点击处理
 const handleNavClick = async (tabId) => {
-  console.log('Sidebar nav clicked:', tabId)
+  console.log('🔄 Sidebar nav clicked:', tabId)
+  
+  // 主要方式：通过 emit 发送事件
   emit('tab-change', tabId)
   
-  // 强制DOM事件以确保响应
-  await new Promise(resolve => setTimeout(resolve, 0))
+  // 备用方式1：直接访问父组件的方法 (通过inject)
+  const setCurrentTab = inject('setCurrentTab')
+  if (setCurrentTab) {
+    console.log('📝 Direct tab update via inject:', tabId)
+    setCurrentTab(tabId)
+  }
   
-  // 可选: 添加自定义DOM事件作为备用
+  // 备用方式2：DOM自定义事件
+  await nextTick()
   const event = new CustomEvent('admin-tab-change', { 
     detail: { tab: tabId },
     bubbles: true 
   })
   document.dispatchEvent(event)
+  
+  console.log('✅ Tab change events dispatched for:', tabId)
 }
 
 // 折叠切换功能
