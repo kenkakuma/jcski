@@ -220,7 +220,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, inject, onMounted, onUnmounted, watch, unref } from 'vue'
 import AdvancedPostManager from '~/components/AdvancedPostManager.vue'
 import AdminHero from '~/components/AdminHero.vue'
 import AdminMedia from '~/components/AdminMedia.vue'
@@ -231,11 +231,17 @@ definePageMeta({
   layout: 'admin'
 })
 
-// 管理tab状态 - 直接使用布局传递的状态
+// 管理tab状态 - 直接使用布局传递的状态  
 const currentTab = inject('currentTab', ref('dashboard'))
+console.log('🚨 Injected currentTab:', currentTab)
+console.log('🚨 currentTab type:', typeof currentTab)
+console.log('🚨 currentTab.value:', currentTab?.value)
 const activeTab = computed(() => {
-  console.log('🔍 Computing activeTab - currentTab.value:', currentTab.value)
-  return currentTab.value || 'dashboard'
+  const tabValue = currentTab?.value || 'dashboard'
+  console.log('🔍 Computing activeTab - currentTab:', currentTab)
+  console.log('🔍 Computing activeTab - currentTab.value:', currentTab?.value)
+  console.log('🔍 Computed activeTab result:', tabValue)
+  return tabValue
 })
 
 // 监听布局tab变化和调试信息

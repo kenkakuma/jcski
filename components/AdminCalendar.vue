@@ -153,6 +153,8 @@
 </template>
 
 <script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+
 const currentDate = ref(new Date())
 const selectedDate = ref(null)
 const events = ref([])

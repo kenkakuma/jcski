@@ -1,7 +1,7 @@
 <template>
   <div class="admin-layout">
     <!-- 管理侧边栏 -->
-    <AdminSidebar :active-tab="currentTab" @tab-change="handleTabChange" />
+    <AdminSidebar />
     
     <!-- 主要内容区域 -->
     <main class="admin-main" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
@@ -18,9 +18,9 @@
                   管理后台
                 </NuxtLink>
               </li>
-              <li v-if="currentPageTitle" class="breadcrumb-item active">
-                <span class="breadcrumb-icon">{{ currentPageIcon }}</span>
-                {{ currentPageTitle }}
+              <li v-if="pageInfo.title" class="breadcrumb-item active">
+                <span class="breadcrumb-icon">{{ pageInfo.icon }}</span>
+                {{ pageInfo.title }}
               </li>
             </ol>
           </nav>
@@ -140,8 +140,8 @@ useHead({
   ]
 })
 
-// 响应式数据
-const currentTab = ref('dashboard')
+// 使用路由获取当前页面信息
+const route = useRoute()
 const sidebarCollapsed = ref(false)
 const showNotifications = ref(false)
 const showUserMenu = ref(false)
@@ -169,56 +169,22 @@ const notificationCount = computed(() => {
   return notifications.value.filter(n => !n.read).length
 })
 
-const currentPageTitle = computed(() => {
-  const titles = {
-    dashboard: '控制面板',
-    posts: '文章管理',
-    hero: 'Hero管理',
-    settings: '网站设置',
-    media: '媒体管理',
-    calendar: '日程管理',
-    analytics: '数据分析'
+// 基于路由的页面信息
+const pageInfo = computed(() => {
+  const pathMap = {
+    '/admin': { title: '', icon: '📊' }, // 控制面板不显示标题
+    '/admin/posts': { title: '文章管理', icon: '📝' },
+    '/admin/hero': { title: 'Hero管理', icon: '🎯' },
+    '/admin/media': { title: '媒体管理', icon: '🖼️' },
+    '/admin/settings': { title: '网站设置', icon: '⚙️' },
+    '/admin/calendar': { title: '日程管理', icon: '📅' },
+    '/admin/analytics': { title: '数据分析', icon: '📈' }
   }
-  return titles[currentTab.value] || ''
-})
-
-const currentPageIcon = computed(() => {
-  const icons = {
-    dashboard: '📊',
-    posts: '📝',
-    hero: '🎯',
-    settings: '⚙️',
-    media: '🖼️',
-    calendar: '📅',
-    analytics: '📈'
-  }
-  return icons[currentTab.value] || '📄'
-})
-
-// Provide current tab to child components  
-provide('currentTab', currentTab)
-provide('setCurrentTab', (tab) => {
-  console.log('🔄 setCurrentTab called:', tab)
-  console.log('🔄 Before setCurrentTab - currentTab.value:', currentTab.value)
-  currentTab.value = tab
-  console.log('🔄 After setCurrentTab - currentTab.value:', currentTab.value)
+  
+  return pathMap[route.path] || { title: '', icon: '📄' }
 })
 
 // 方法
-const handleTabChange = async (tab) => {
-  console.log('🚨 Layout handleTabChange called:', tab) // 调试日志
-  console.log('🚨 Before change - currentTab.value:', currentTab.value)
-  console.log('🚨 Before change - currentTab type:', typeof currentTab.value)
-  currentTab.value = tab
-  showNotifications.value = false
-  showUserMenu.value = false
-  
-  // 确保DOM和状态同步
-  await nextTick()
-  console.log('🚨 After change - currentTab.value:', currentTab.value)
-  console.log('🚨 After change - currentTab type:', typeof currentTab.value)
-  console.log('🚨 Tab change completed for:', tab)
-}
 
 const markAsRead = (notificationId) => {
   const notification = notifications.value.find(n => n.id === notificationId)
@@ -244,27 +210,30 @@ const formatTime = (date) => {
 }
 
 const quickCreatePost = () => {
-  currentTab.value = 'posts'
-  // 触发创建文章的逻辑
+  navigateTo('/admin/posts')
   console.log('快速创建文章')
 }
 
 const quickUploadMedia = () => {
-  currentTab.value = 'media'
+  navigateTo('/admin/media')
   // 触发上传媒体的逻辑
   console.log('快速上传媒体')
 }
 
 const handleLogout = async () => {
   try {
-    // 清除认证状态
+    // 清除认证cookie
+    const token = useCookie('auth-token')
+    token.value = null
+    
+    // 跳转到登录页面
     await navigateTo('/admin/login')
   } catch (error) {
     console.error('登出失败:', error)
   }
 }
 
-// 点击外部关闭下拉菜单 + 监听自定义tab变更事件
+// 点击外部关闭下拉菜单
 onMounted(() => {
   const handleClickOutside = (event) => {
     if (!event.target.closest('.notification-center')) {
@@ -275,18 +244,10 @@ onMounted(() => {
     }
   }
   
-  // 监听自定义DOM事件作为备用机制
-  const handleCustomTabChange = (event) => {
-    console.log('📧 Custom DOM event received:', event.detail.tab)
-    handleTabChange(event.detail.tab)
-  }
-  
   document.addEventListener('click', handleClickOutside)
-  document.addEventListener('admin-tab-change', handleCustomTabChange)
   
   onUnmounted(() => {
     document.removeEventListener('click', handleClickOutside)
-    document.removeEventListener('admin-tab-change', handleCustomTabChange)
   })
 })
 </script>

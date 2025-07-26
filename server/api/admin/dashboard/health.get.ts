@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
       const [postCount, publishedCount, heroCount, mediaCount] = await Promise.all([
         prisma.blogPost.count(),
         prisma.blogPost.count({ where: { published: true } }),
-        prisma.heroContent.count({ where: { isActive: true } }),
+        prisma.heroContent.count({ where: { active: true } }),
         prisma.mediaFile.count()
       ])
       

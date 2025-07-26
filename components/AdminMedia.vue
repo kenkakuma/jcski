@@ -180,6 +180,7 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import SmartImage from './SmartImage.vue'
 import { formatFileSize, isImageFile, isAudioFile } from '~/utils/media'
 

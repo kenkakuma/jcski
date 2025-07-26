@@ -32,47 +32,47 @@
     <nav class="sidebar-nav">
       <div class="nav-section">
         <div v-if="!isCollapsed" class="section-title">核心功能</div>
-        <button
+        <NuxtLink
           v-for="tab in mainTabs"
           :key="tab.id"
-          :class="['nav-item', { active: activeTab === tab.id }]"
-          @click="handleNavClick(tab.id)"
+          :to="tab.path"
+          :class="['nav-item', { active: $route.path === tab.path }]"
           :title="isCollapsed ? tab.label : ''"
         >
           <span class="nav-icon">{{ tab.icon }}</span>
           <span v-if="!isCollapsed" class="nav-label">{{ tab.label }}</span>
           <span v-if="!isCollapsed && tab.badge" class="nav-badge">{{ tab.badge }}</span>
-        </button>
+        </NuxtLink>
       </div>
 
       <div class="nav-section">
         <div v-if="!isCollapsed" class="section-title">内容管理</div>
-        <button
+        <NuxtLink
           v-for="tab in contentTabs"
           :key="tab.id"
-          :class="['nav-item', { active: activeTab === tab.id }]"
-          @click="handleNavClick(tab.id)"
+          :to="tab.path"
+          :class="['nav-item', { active: $route.path === tab.path }]"
           :title="isCollapsed ? tab.label : ''"
         >
           <span class="nav-icon">{{ tab.icon }}</span>
           <span v-if="!isCollapsed" class="nav-label">{{ tab.label }}</span>
           <span v-if="!isCollapsed && tab.badge" class="nav-badge">{{ tab.badge }}</span>
-        </button>
+        </NuxtLink>
       </div>
 
       <div class="nav-section">
         <div v-if="!isCollapsed" class="section-title">系统管理</div>
-        <button
+        <NuxtLink
           v-for="tab in systemTabs"
           :key="tab.id"
-          :class="['nav-item', { active: activeTab === tab.id }]"
-          @click="handleNavClick(tab.id)"
+          :to="tab.path"
+          :class="['nav-item', { active: $route.path === tab.path }]"
           :title="isCollapsed ? tab.label : ''"
         >
           <span class="nav-icon">{{ tab.icon }}</span>
           <span v-if="!isCollapsed" class="nav-label">{{ tab.label }}</span>
           <span v-if="!isCollapsed && tab.badge" class="nav-badge">{{ tab.badge }}</span>
-        </button>
+        </NuxtLink>
       </div>
     </nav>
 
@@ -93,46 +93,8 @@
 <script setup>
 import { ref, inject, nextTick, onMounted, onUnmounted } from 'vue'
 
-const props = defineProps({
-  activeTab: {
-    type: String,
-    required: true
-  }
-})
-
-const emit = defineEmits(['tab-change'])
-
 // 折叠状态管理
 const isCollapsed = ref(false)
-
-// 导航点击处理
-const handleNavClick = async (tabId) => {
-  console.log('🔄 Sidebar nav clicked:', tabId)
-  console.log('🔄 Current activeTab prop:', props.activeTab)
-  
-  // 主要方式：通过 emit 发送事件
-  console.log('📤 Emitting tab-change event:', tabId)
-  emit('tab-change', tabId)
-  
-  // 备用方式1：直接访问父组件的方法 (通过inject)
-  const setCurrentTab = inject('setCurrentTab')
-  if (setCurrentTab) {
-    console.log('📝 Direct tab update via inject:', tabId)
-    setCurrentTab(tabId)
-  } else {
-    console.log('❌ setCurrentTab not found via inject')
-  }
-  
-  // 备用方式2：DOM自定义事件
-  await nextTick()
-  const event = new CustomEvent('admin-tab-change', { 
-    detail: { tab: tabId },
-    bubbles: true 
-  })
-  document.dispatchEvent(event)
-  
-  console.log('✅ Tab change events dispatched for:', tabId)
-}
 
 // 折叠切换功能
 const toggleCollapse = () => {
@@ -141,21 +103,21 @@ const toggleCollapse = () => {
 
 // 核心功能导航
 const mainTabs = [
-  { id: 'dashboard', label: '控制面板', icon: '📊', badge: null },
+  { id: 'dashboard', label: '控制面板', icon: '📊', badge: null, path: '/admin' },
 ]
 
 // 内容管理导航
 const contentTabs = [
-  { id: 'posts', label: '文章管理', icon: '📝', badge: 'NEW' },
-  { id: 'hero', label: 'Hero管理', icon: '🎯', badge: null },
-  { id: 'media', label: '媒体管理', icon: '🖼️', badge: null },
+  { id: 'posts', label: '文章管理', icon: '📝', badge: 'NEW', path: '/admin/posts' },
+  { id: 'hero', label: 'Hero管理', icon: '🎯', badge: null, path: '/admin/hero' },
+  { id: 'media', label: '媒体管理', icon: '🖼️', badge: null, path: '/admin/media' },
 ]
 
 // 系统管理导航
 const systemTabs = [
-  { id: 'settings', label: '网站设置', icon: '⚙️', badge: null },
-  { id: 'analytics', label: '数据分析', icon: '📈', badge: null },
-  { id: 'calendar', label: '日程管理', icon: '📅', badge: null }
+  { id: 'settings', label: '网站设置', icon: '⚙️', badge: null, path: '/admin/settings' },
+  { id: 'analytics', label: '数据分析', icon: '📈', badge: null, path: '/admin/analytics' },
+  { id: 'calendar', label: '日程管理', icon: '📅', badge: null, path: '/admin/calendar' }
 ]
 
 // 响应式处理
@@ -326,8 +288,9 @@ onMounted(() => {
   text-align: left;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  text-decoration: none;
   position: relative;
+  font-size: 14px;
   margin: 2px 0;
 }
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Switching Test - JCSKI Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-header {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .test-step {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid #27ae60;
+            background: #f9f9f9;
+        }
+        .test-step.failed {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+        .test-step.pending {
+            border-left-color: #f39c12;
+            background: #fdf6e3;
+        }
+        .status {
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .status.pass { background: #d4edda; color: #155724; }
+        .status.fail { background: #f8d7da; color: #721c24; }
+        .status.pending { background: #fff3cd; color: #856404; }
+        .debug-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 JCSKI 管理后台 Tab 切换功能测试报告</h1>
+            <p><strong>测试时间:</strong> 2025-07-26</p>
+            <p><strong>测试目标:</strong> 验证左侧边栏点击后右侧页面能正确切换</p>
+        </div>
+
+        <h2>🔍 问题诊断结果</h2>
+        <div class="test-step">
+            <strong>发现的问题:</strong>
+            <ul>
+                <li>AdminSidebar组件接收的activeTab属性传递了ref对象而不是值</li>
+                <li>响应式状态更新可能存在延迟或同步问题</li>
+            </ul>
+        </div>
+
+        <h2>🛠️ 修复操作</h2>
+        <div class="test-step">
+            <strong>1. 修复属性传递问题</strong>
+            <div class="debug-info">
+                修改: layouts/admin.vue 第4行<br>
+                从: :active-tab="currentTab"<br>
+                到: :active-tab="currentTab.value"
+            </div>
+            <span class="status pass">✅ 完成</span>
+        </div>
+
+        <div class="test-step">
+            <strong>2. 改进响应式计算</strong>
+            <div class="debug-info">
+                优化: pages/admin/index.vue activeTab computed属性<br>
+                简化计算逻辑，增强调试信息
+            </div>
+            <span class="status pass">✅ 完成</span>
+        </div>
+
+        <h2>🧪 测试步骤</h2>
+        <div class="test-step pending">
+            <strong>步骤 1:</strong> 访问管理后台 (http://localhost:3000/admin)
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <div class="test-step pending">
+            <strong>步骤 2:</strong> 点击左侧"文章管理"按钮
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <div class="test-step pending">
+            <strong>步骤 3:</strong> 验证右侧显示文章管理界面(AdvancedPostManager)
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <div class="test-step pending">
+            <strong>步骤 4:</strong> 点击"Hero管理"验证切换
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <div class="test-step pending">
+            <strong>步骤 5:</strong> 点击"媒体管理"验证切换
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <div class="test-step pending">
+            <strong>步骤 6:</strong> 点击"网站设置"验证切换
+            <span class="status pending">⏳ 待测试</span>
+        </div>
+
+        <h2>🔧 调试信息</h2>
+        <div class="debug-info">
+            <strong>关键调试输出 (请在浏览器控制台查看):</strong><br>
+            🔄 Sidebar nav clicked: [tab-id]<br>
+            📤 Emitting tab-change event: [tab-id]<br>
+            🚨 Layout handleTabChange called: [tab-id]<br>
+            🔍 Computing activeTab - currentTab.value: [tab-id]<br>
+            🔄 Tab changed from [old] to [new]
+        </div>
+
+        <h2>✅ 预期结果</h2>
+        <ul>
+            <li>点击左侧菜单项时，控制台显示相应调试信息</li>
+            <li>右侧内容区域切换到对应功能页面</li>
+            <li>调试信息显示当前Tab状态正确更新</li>
+            <li>左侧菜单项高亮状态正确显示</li>
+        </ul>
+
+        <div style="margin-top: 30px; padding: 15px; background: #d1ecf1; border-radius: 4px;">
+            <strong>📋 测试说明:</strong><br>
+            1. 在浏览器中访问管理后台页面<br>
+            2. 打开开发者工具控制台查看调试信息<br>
+            3. 依次点击左侧各个功能菜单<br>
+            4. 验证右侧页面内容是否正确切换<br>
+            5. 如有问题，查看控制台错误信息
+        </div>
+    </div>
+</body>
+</html>

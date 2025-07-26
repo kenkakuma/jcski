@@ -204,6 +204,8 @@
 </template>
 
 <script setup>
+import { ref, reactive, onMounted } from 'vue'
+
 const settings = reactive({
   siteName: 'JCSKI',
   siteDescription: 'Personal Blog',
