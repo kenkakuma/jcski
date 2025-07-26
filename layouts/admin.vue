@@ -199,20 +199,24 @@ const currentPageIcon = computed(() => {
 provide('currentTab', currentTab)
 provide('setCurrentTab', (tab) => {
   console.log('🔄 setCurrentTab called:', tab)
+  console.log('🔄 Before setCurrentTab - currentTab.value:', currentTab.value)
   currentTab.value = tab
+  console.log('🔄 After setCurrentTab - currentTab.value:', currentTab.value)
 })
 
 // 方法
 const handleTabChange = async (tab) => {
   console.log('🚨 Layout handleTabChange called:', tab) // 调试日志
-  console.log('🚨 Before change - currentTab:', currentTab.value)
+  console.log('🚨 Before change - currentTab.value:', currentTab.value)
+  console.log('🚨 Before change - currentTab type:', typeof currentTab.value)
   currentTab.value = tab
   showNotifications.value = false
   showUserMenu.value = false
   
   // 确保DOM和状态同步
   await nextTick()
-  console.log('🚨 After change - currentTab:', currentTab.value)
+  console.log('🚨 After change - currentTab.value:', currentTab.value)
+  console.log('🚨 After change - currentTab type:', typeof currentTab.value)
   console.log('🚨 Tab change completed for:', tab)
 }
 

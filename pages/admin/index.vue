@@ -233,7 +233,10 @@ definePageMeta({
 
 // 管理tab状态 - 直接使用布局传递的状态
 const currentTab = inject('currentTab', ref('dashboard'))
-const activeTab = computed(() => currentTab.value)
+const activeTab = computed(() => {
+  console.log('🔍 Computing activeTab - currentTab.value:', currentTab.value)
+  return currentTab.value || 'dashboard'
+})
 
 // 监听布局tab变化和调试信息
 onMounted(() => {
