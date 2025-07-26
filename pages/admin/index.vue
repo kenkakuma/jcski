@@ -1,5 +1,18 @@
 <template>
   <NuxtLayout name="admin">
+    <!-- Debug Info -->
+    <div class="debug-info" style="background: #f0f0f0; padding: 10px; margin-bottom: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+      <strong>🔍 Debug Info:</strong> Current Tab = "{{ activeTab }}" | Injected Tab = "{{ currentTab }}"<br>
+      <strong>📊 Visible Sections:</strong> 
+      Dashboard: {{ activeTab === 'dashboard' }}, 
+      Posts: {{ activeTab === 'posts' }}, 
+      Hero: {{ activeTab === 'hero' }}, 
+      Media: {{ activeTab === 'media' }}, 
+      Settings: {{ activeTab === 'settings' }}, 
+      Calendar: {{ activeTab === 'calendar' }}, 
+      Analytics: {{ activeTab === 'analytics' }}
+    </div>
+    
     <div class="dashboard-overview-wrapper">
         <!-- Dashboard Overview -->
         <div v-if="activeTab === 'dashboard'" class="dashboard-overview">
@@ -205,7 +218,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, onUnmounted } from 'vue'
+import { ref, computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import AdvancedPostManager from '~/components/AdvancedPostManager.vue'
 import AdminHero from '~/components/AdminHero.vue'
 import AdminMedia from '~/components/AdminMedia.vue'
@@ -220,9 +233,23 @@ definePageMeta({
 const currentTab = inject('currentTab', ref('dashboard'))
 const activeTab = computed(() => currentTab.value)
 
-// 监听布局tab变化
+// 监听布局tab变化和调试信息
 onMounted(() => {
-  console.log('Admin page mounted, current tab:', activeTab.value)
+  console.log('🔍 Admin page mounted, current tab:', activeTab.value)
+  
+  // 监听tab变化
+  watch(currentTab, (newTab, oldTab) => {
+    console.log('🔄 Tab changed from', oldTab, 'to', newTab)
+    console.log('📊 Active sections:', {
+      dashboard: newTab === 'dashboard',
+      posts: newTab === 'posts', 
+      hero: newTab === 'hero',
+      media: newTab === 'media',
+      settings: newTab === 'settings',
+      calendar: newTab === 'calendar',
+      analytics: newTab === 'analytics'
+    })
+  }, { immediate: true })
 })
 
 // 仪表板数据状态
