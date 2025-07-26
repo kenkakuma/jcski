@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
             author: {
               select: {
                 id: true,
-                name: true,
+                username: true,
                 email: true
               }
             }
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
         author: {
           select: {
             id: true,
-            name: true,
+            username: true,
             email: true
           }
         }

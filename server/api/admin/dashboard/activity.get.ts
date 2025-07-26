@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
           author: {
             select: {
               id: true,
-              name: true,
+              username: true,
               email: true
             }
           }
@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
           title: post.title,
           description: `文章 "${post.title}" 已${isNew ? '创建' : '更新'}`,
           timestamp: post.updatedAt,
-          author: post.author?.name || post.author?.email || '未知用户',
+          author: post.author?.username || post.author?.email || '未知用户',
           metadata: {
             postId: post.id,
             slug: post.slug,
@@ -124,7 +124,7 @@ export default defineEventHandler(async (event) => {
         },
         select: {
           id: true,
-          menuItem: true,
+          type: true,
           title: true,
           isActive: true,
           createdAt: true,
@@ -141,12 +141,12 @@ export default defineEventHandler(async (event) => {
           type: 'hero',
           action: isNew ? 'created' : 'updated',
           title: hero.title,
-          description: `Hero内容 "${hero.title}" (${hero.menuItem}) 已${isNew ? '创建' : '更新'}`,
+          description: `Hero内容 "${hero.title}" (${hero.type}) 已${isNew ? '创建' : '更新'}`,
           timestamp: hero.updatedAt,
           author: '管理员',
           metadata: {
             heroId: hero.id,
-            menuItem: hero.menuItem,
+            type: hero.type,
             isActive: hero.isActive,
             status: hero.isActive ? 'active' : 'inactive'
           },
