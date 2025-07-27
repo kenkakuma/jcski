@@ -2,8 +2,12 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
     '@nuxt/content',
+    '@nuxthq/studio',
     '@nuxtjs/google-fonts'
   ],
+  studio: {
+    enabled: true
+  },
   css: [
     '~/assets/css/critical.css',
     '~/assets/css/main.css',

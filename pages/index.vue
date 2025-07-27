@@ -258,8 +258,7 @@ const {
 // 响应式数据
 const heroContents = ref<HeroContent[]>([])
 const activeHero = ref<HeroContent | null>(null)
-const pinnedPosts = ref<BlogPost[]>([]) // JCSKI NEWS 置顶文章
-const recentPosts = ref<BlogPost[]>([]) // PRESS RELEASE 最新文章
+// pinnedPosts 和 recentPosts 现在通过混合数据源 composable 提供
 const loading = ref(true)
 const isChanging = ref(false)
 let changeTimeout: NodeJS.Timeout | null = null
@@ -278,14 +277,38 @@ const defaultHero = {
   updatedAt: new Date()
 }
 
-// 获取Hero内容
+// 使用混合数据源获取Hero内容
+const { data: heroData, pending: heroLoading } = await useHeroContent()
+
+// 获取Hero内容（兼容原有格式）
 const fetchHeroContents = async () => {
   try {
-    const response = await $fetch('/api/hero')
-    if (response.success) {
-      heroContents.value = response.data
+    if (heroData.value) {
+      // 转换Content格式为原有格式
+      heroContents.value = heroData.value.map(item => ({
+        id: item.displayOrder,
+        type: item.menuItem,
+        title: item.title,
+        subtitle: item.subtitle,
+        description: item.description,
+        image: null,
+        active: item.isActive,
+        order: item.displayOrder,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }))
+      
       // 设置默认激活的hero（第一个或默认内容）
       activeHero.value = heroContents.value[0] || defaultHero
+      console.log('✅ Hero内容加载成功，来源: Content Studio')
+    } else {
+      // 备用数据库API方式
+      const response = await $fetch('/api/hero')
+      if (response.success) {
+        heroContents.value = response.data
+        activeHero.value = heroContents.value[0] || defaultHero
+        console.log('✅ Hero内容加载成功，来源: 数据库API')
+      }
     }
   } catch (error) {
     console.error('获取Hero内容失败:', error)
@@ -295,29 +318,13 @@ const fetchHeroContents = async () => {
   }
 }
 
-// 获取置顶文章 (JCSKI NEWS)
-const fetchPinnedPosts = async () => {
-  try {
-    const response = await $fetch('/api/posts?pinned=true&published=true&limit=6')
-    if (response.posts) {
-      pinnedPosts.value = response.posts
-    }
-  } catch (error) {
-    console.error('获取置顶文章失败:', error)
-  }
-}
+// 使用混合数据源获取置顶文章 (JCSKI NEWS)
+const { data: pinnedPostsData } = await usePinnedPosts(6)
+const pinnedPosts = computed(() => pinnedPostsData.value || [])
 
-// 获取最新博客文章 (PRESS RELEASE)
-const fetchRecentPosts = async () => {
-  try {
-    const response = await $fetch('/api/posts?published=true&limit=10')
-    if (response.posts) {
-      recentPosts.value = response.posts
-    }
-  } catch (error) {
-    console.error('获取文章列表失败:', error)
-  }
-}
+// 使用混合数据源获取最新文章 (PRESS RELEASE)
+const { data: latestPostsData } = await useLatestPosts(10)
+const recentPosts = computed(() => latestPostsData.value || [])
 
 // 日期格式化函数
 const formatDate = (date: Date | string) => {
@@ -372,8 +379,7 @@ const { generateHomePageJsonLD, applyJsonLD } = useJsonLD()
 
 onMounted(() => {
   fetchHeroContents()
-  fetchPinnedPosts()
-  fetchRecentPosts()
+  // 文章数据现在通过混合数据源 composable 自动获取
   
   // 设置首页SEO
   setHomeSEO()

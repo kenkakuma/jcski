@@ -223,52 +223,46 @@ import { parseMarkdownAdvanced, isMarkdownContent } from '~/utils/markdown'
 const route = useRoute()
 const slug = route.params.slug as string
 
-// Reactive data
-const article = ref<BlogPost | null>(null)
-const relatedArticles = ref<BlogPost[]>([])
-const prevArticle = ref<BlogPost | null>(null)
-const nextArticle = ref<BlogPost | null>(null)
-const loading = ref(true)
-const error = ref<string | null>(null)
+// 使用混合数据源获取文章
+const { data: article, pending: loading, error: fetchError } = await useHybridPost(slug)
 
-// Fetch post data
-const fetchPost = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    
-    const response = await $fetch(`/api/posts/${slug}`)
-    
-    if (response && response.success && response.data) {
-      // 解析tags字段（如果是JSON字符串）
-      const articleData = { ...response.data }
-      if (typeof articleData.tags === 'string') {
-        try {
-          articleData.tags = JSON.parse(articleData.tags)
-        } catch (e) {
-          console.warn('Failed to parse tags JSON:', e)
-          articleData.tags = []
-        }
-      }
-      
-      article.value = articleData
-      relatedArticles.value = response.related || []
-      prevArticle.value = response.navigation?.previous || null
-      nextArticle.value = response.navigation?.next || null
-    } else {
-      error.value = '記事が見つかりません'
-    }
-  } catch (err: any) {
-    console.error('Error fetching post:', err)
-    error.value = '記事の読み込みに失敗しました'
-  } finally {
-    loading.value = false
+// 转换错误格式
+const error = computed(() => {
+  if (fetchError.value) {
+    return fetchError.value.message || '記事の読み込みに失敗しました'
   }
-}
+  if (!article.value) {
+    return '記事が見つかりません'
+  }
+  return null
+})
 
-// Initialize
-onMounted(() => {
-  fetchPost()
+// 获取相关文章 - 根据分类
+const { data: allPosts } = await useLatestPosts(20)
+const relatedArticles = computed(() => {
+  if (!article.value || !allPosts.value) return []
+  
+  return allPosts.value
+    .filter(post => 
+      post.category === article.value?.category && 
+      post.slug !== article.value?.slug
+    )
+    .slice(0, 3)
+})
+
+// 导航文章（上一篇/下一篇）
+const prevArticle = computed(() => {
+  if (!article.value || !allPosts.value) return null
+  
+  const currentIndex = allPosts.value.findIndex(post => post.slug === article.value?.slug)
+  return currentIndex > 0 ? allPosts.value[currentIndex - 1] : null
+})
+
+const nextArticle = computed(() => {
+  if (!article.value || !allPosts.value) return null
+  
+  const currentIndex = allPosts.value.findIndex(post => post.slug === article.value?.slug)
+  return currentIndex < allPosts.value.length - 1 ? allPosts.value[currentIndex + 1] : null
 })
 
 // Computed properties
